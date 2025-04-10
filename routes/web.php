@@ -16,7 +16,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [EcommerceController::class, 'admin'])->name('admin');
 
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('Admin/Dashboard/Dashboard');
     })->name('dashboard');
 });
 

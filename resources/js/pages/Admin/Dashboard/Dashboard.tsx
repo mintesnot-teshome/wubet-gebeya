@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -20,7 +20,7 @@ import {
   deleteProduct,
   getAllProducts,
   updateProduct,
-} from "../../../Redux/products/actions";
+} from "@/Redux/products/actions";
 import { useSelector, useDispatch } from "react-redux";
 
 function Dashboard() {
