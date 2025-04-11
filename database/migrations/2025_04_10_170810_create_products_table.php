@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('imageUrl');
             $table->decimal('price', 10, 2);
             $table->decimal('stars', 3, 2)->default(0);
+            $table->string('type');
             $table->integer('numReviews')->default(0);
             $table->timestamps();
+
         });
     }
 

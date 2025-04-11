@@ -36,6 +36,7 @@ class ProductSeeder extends Seeder
                                 'imageUrl' => $product['imageUrl'] ?? 'https://via.placeholder.com/400',
                                 'price' => $product['price'] ?? 0,
                                 'stars' => $product['stars'] ?? 0,
+                                'type' => $product['type'] ?? 'Unknown Type',
                                 'numReviews' => $product['numReviews'] ?? 0,
                             ]);
                         }

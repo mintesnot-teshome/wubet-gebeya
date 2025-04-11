@@ -21,6 +21,7 @@ class Product extends Model
         'imageUrl',
         'price',
         'stars',
+        'type',
         'numReviews',
     ];
 

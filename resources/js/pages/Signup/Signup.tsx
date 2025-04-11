@@ -13,6 +13,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EmailIcon, LockIcon } from "@chakra-ui/icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { authRegister } from "../../Redux/auth/actions";
 import { useNavigate } from "react-router-dom";

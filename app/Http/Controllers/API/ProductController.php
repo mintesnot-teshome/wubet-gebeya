@@ -62,6 +62,7 @@ class ProductController extends Controller
             'imageUrl' => 'required|url',
             'price' => 'required|numeric|min:0',
             'stars' => 'required|numeric|min:0|max:5',
+            'type' => 'required|string|max:100',
             'numReviews' => 'required|integer|min:0',
         ]);
 
@@ -105,6 +106,7 @@ class ProductController extends Controller
             'imageUrl' => 'sometimes|required|url',
             'price' => 'sometimes|required|numeric|min:0',
             'stars' => 'sometimes|required|numeric|min:0|max:5',
+            'type' => 'required|string|max:100',
             'numReviews' => 'sometimes|required|integer|min:0',
         ]);
 

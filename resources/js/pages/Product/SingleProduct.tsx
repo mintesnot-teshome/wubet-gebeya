@@ -1,220 +1,250 @@
-import React, { useEffect } from "react";
-import { StarIcon } from "@chakra-ui/icons";
 import {
-  Box,
-  Container,
-  Stack,
-  Text,
-  Image,
-  Flex,
-  VStack,
-  Button,
-  Heading,
-  SimpleGrid,
-  StackDivider,
-  useColorModeValue,
-  List,
-  ListItem,
-} from "@chakra-ui/react";
-import { MdLocalShipping } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { getSingleProduct } from "../../Redux/products/actions";
-import { addProductToCart } from "../../Redux/cart/actions";
-import { usePage } from '@inertiajs/react';
-import DefaultLayout from '@/layouts/default-layout';
-
-// Define types for the product data
-interface Product {
-  _id: string;
-  name: string;
-  imageUrl: string;
-  price: number;
-  brand: string;
-  category: string;
-  numReviews: number;
-  stars: number;
-  // Add other properties as needed
-}
-
-// Define RootState interface for the Redux store
-interface RootState {
-  products: {
-    single_data: Product;
-    AllProducts: { loading: boolean; error: boolean };
-    Product: { loading: boolean; error: boolean };
-    data: Product[];
-  };
-  auth: {
-    data: {
-      isAuthenticated: boolean;
-      token: string | null;
-      user: any;
+    Box,
+    Flex,
+    NumberDecrementStepper,
+    NumberIncrementStepper,
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    Select,
+    Skeleton,
+    SkeletonCircle,
+    SkeletonText,
+    Slider,
+    SliderFilledTrack,
+    SliderThumb,
+    SliderTrack,
+    useToast,
+} from '@chakra-ui/react';
+import { Link } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { AiOutlineStar } from 'react-icons/ai';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import { TiTick } from 'react-icons/ti';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { addProductToCart } from '../../Redux/cart/actions';
+import { getAllProducts, getSingleProduct } from '../../Redux/products/actions';
+import './SingleProduct.css';
+const responsive1 = {
+    superLargeDesktop: {
+        breakpoint: { max: 4000, min: 3000 },
+        items: 9,
+        slidesToSlide: 9,
+    },
+    desktop: {
+        breakpoint: { max: 3000, min: 1024 },
+        items: 6,
+        slidesToSlide: 6,
+    },
+    tablet: {
+        breakpoint: { max: 1024, min: 464 },
+        items: 3,
+        slidesToSlide: 3,
+    },
+    mobile: {
+        breakpoint: { max: 464, min: 0 },
+        items: 2,
+        slidesToSlide: 2,
+    },
+};
+function SingleProduct() {
+    const [value, setValue] = useState(1);
+    let {
+        Product: { loading },
+        singleData: data,
+        AllProducts: { loading: prodLoad },
+        data: products,
+    } = useSelector((store) => store.products);
+    let auth = useSelector((store) => store.auth);
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getSingleProduct(id));
+        dispatch(getAllProducts({ category: data.category }));
+    }, [dispatch, id, data.category]);
+    const { stars, numReviews } = data;
+    const handleChange = (value) => setValue(value);
+    // console.log(auth);
+    const toast = useToast();
+    const productAdded = () => {
+        toast({
+            title: 'Product Added',
+            description: 'We have added your product to Basket',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+            position: 'top',
+        });
     };
-  };
-  carts: {
-    carts: any[];
-    loading: boolean;
-    error: boolean;
-    message: string;
-  };
-}
-
-export default function SingleProduct() {
-  const { productId } = usePage().props;
-  const dispatch = useDispatch();
-  const { single_data } = useSelector((store: RootState) => store.products);
-
-  useEffect(() => {
-    dispatch(getSingleProduct(productId));
-  }, [dispatch, productId]);
-
-  return (
-    <DefaultLayout title={single_data?.name || "Product"}>
-      <Container maxW={"7xl"}>
-        <SimpleGrid
-          columns={{ base: 1, lg: 2 }}
-          spacing={{ base: 8, md: 10 }}
-          py={{ base: 18, md: 24 }}
-        >
-          <Flex>
-            <Image
-              rounded={"md"}
-              alt={"product image"}
-              src={single_data?.imageUrl}
-              fit={"cover"}
-              align={"center"}
-              w={"100%"}
-              h={{ base: "100%", sm: "400px", lg: "500px" }}
-            />
-          </Flex>
-          <Stack spacing={{ base: 6, md: 10 }}>
-            <Box as={"header"}>
-              <Heading
-                lineHeight={1.1}
-                fontWeight={600}
-                fontSize={{ base: "2xl", sm: "4xl", lg: "5xl" }}
-              >
-                {single_data?.name}
-              </Heading>
-              <Text
-                color={useColorModeValue("gray.900", "gray.400")}
-                fontWeight={300}
-                fontSize={"2xl"}
-              >
-                ₹ {single_data?.price ? single_data.price * 81 : ""}
-              </Text>
-            </Box>
-            <Stack
-              spacing={{ base: 4, sm: 6 }}
-              direction={"column"}
-              divider={
-                <StackDivider
-                  borderColor={useColorModeValue("gray.200", "gray.600")}
-                />
-              }
-            >
-              <VStack spacing={{ base: 4, sm: 6 }}>
-                <Text
-                  color={useColorModeValue("gray.500", "gray.400")}
-                  fontSize={"2xl"}
-                  fontWeight={"300"}
-                >
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                  diam nonumy eirmod tempor invidunt ut labore
-                </Text>
-                <Text fontSize={"lg"}>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad
-                  aliquid amet at delectus doloribus dolorum expedita hic, ipsum
-                  maxime modi nam officiis porro, quae, quisquam quos
-                  reprehenderit velit? Natus, totam.
-                </Text>
-              </VStack>
-              <Box>
-                <Text
-                  fontSize={{ base: "16px", lg: "18px" }}
-                  color={useColorModeValue("yellow.500", "yellow.300")}
-                  fontWeight={"500"}
-                  textTransform={"uppercase"}
-                  mb={"4"}
-                  mt="0"
-                >
-                  Product Details
-                </Text>
-
-                <List spacing={2}>
-                  <ListItem>
-                    <Text as={"span"} fontWeight={"bold"}>
-                      Brand:
-                    </Text>{" "}
-                    {single_data?.brand}
-                  </ListItem>
-                  <ListItem>
-                    <Text as={"span"} fontWeight={"bold"}>
-                      Category:
-                    </Text>{" "}
-                    {single_data?.category}
-                  </ListItem>
-                  <ListItem>
-                    <Text as={"span"} fontWeight={"bold"}>
-                      Reviews:
-                    </Text>{" "}
-                    {single_data?.numReviews}
-                  </ListItem>
-                  <ListItem>
-                    <Text as={"span"} fontWeight={"bold"}>
-                      Rating:
-                    </Text>{" "}
-                    <Box display="flex" mt="2" alignItems="center">
-                      {single_data?.stars &&
-                        Array(5)
-                          .fill("")
-                          .map((_, i) => (
-                            <StarIcon
-                              key={i}
-                              color={
-                                i < single_data.stars ? "teal.500" : "gray.300"
-                              }
-                            />
-                          ))}
+    // console.log(loading);
+    const ratingStar = Array.from({ length: 5 }, (elem, index) => {
+        let number = index + 0.5;
+        return <span key={index}>{stars >= index + 1 ? <FaStar /> : stars >= number ? <FaStarHalfAlt /> : <AiOutlineStar />}</span>;
+    });
+    if (loading) {
+        return (
+            <div className="skeleton">
+                <div>
+                    <Skeleton h="full">
+                        <div>contents wrapped</div>
+                        <div>won't be visible</div>
+                    </Skeleton>
+                </div>
+                <div>
+                    <Box padding="6" boxShadow="lg" bg="white">
+                        <SkeletonCircle size="10" />
+                        <SkeletonText mt="4" noOfLines={4} spacing="4" />
                     </Box>
-                  </ListItem>
-                </List>
-              </Box>
-            </Stack>
+                    <Box padding="6" boxShadow="lg" bg="white">
+                        <SkeletonCircle size="10" />
+                        <SkeletonText mt="4" noOfLines={4} spacing="4" />
+                    </Box>
+                    <Box padding="6" boxShadow="lg" bg="white">
+                        <SkeletonCircle size="10" />
+                        <SkeletonText mt="4" noOfLines={4} spacing="4" />
+                    </Box>
+                </div>
+            </div>
+        );
+    }
 
-            <Button
-              rounded={"none"}
-              w={"full"}
-              mt={8}
-              size={"lg"}
-              py={"7"}
-              bg={useColorModeValue("gray.900", "gray.50")}
-              color={useColorModeValue("white", "gray.900")}
-              textTransform={"uppercase"}
-              _hover={{
-                transform: "translateY(2px)",
-                boxShadow: "lg",
-              }}
-              onClick={() => {
-                if (single_data?._id) {
-                  dispatch(addProductToCart(single_data._id, 1));
-                }
-              }}
-            >
-              Add to cart
-            </Button>
+    return (
+        <>
+            <div className="singleProduct">
+                <div className="singleImage">
+                    <img src={data.imageUrl} alt="productImage" />
+                </div>
+                <div>
+                    <div className="proNames">
+                        <h1>{data.brand}</h1>
+                        <p>{data.name}</p>
+                    </div>
+                    <div className="proRatings">
+                        {ratingStar}
+                        {stars}
+                    </div>
+                    <span className="proreviews">( {numReviews} Costumer reviews )</span>
+                    <div className="proPrices">
+                        <p>
+                            Old Price : <span className="proOld">₹ {(data.price + data.price / 10) * 81}</span>
+                        </p>
+                        <p>
+                            New Price : <span>₹ {data.price * 81} ( 10% off)</span>
+                        </p>
+                    </div>
+                    <div className="proDetails">
+                        <h1>About The Product :</h1>
+                        <ul>
+                            <li>
+                                <span className="proTick">
+                                    <TiTick />
+                                </span>
+                                Color : <span>All colors available</span>
+                            </li>
+                            <li>
+                                <span className="proTick">
+                                    <TiTick />
+                                </span>
+                                Available : <span>In Stock</span>
+                            </li>
+                            <li>
+                                <span className="proTick">
+                                    <TiTick />
+                                </span>
+                                Category : <span>{data.category}</span>
+                            </li>
+                            <li>
+                                <span className="proTick">
+                                    <TiTick />
+                                </span>
+                                Shipping Area : <span>All over the world</span>
+                            </li>
+                            <li>
+                                <span className="proTick">
+                                    <TiTick />
+                                </span>
+                                Shipping fee : <span>Free shipping</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="proQuantity">
+                        <p>Quantity :</p>
+                        <Flex className="proSlider">
+                            <NumberInput maxW="100px" mr="2rem" value={value} onChange={handleChange} zIndex="0">
+                                <NumberInputField />
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                </NumberInputStepper>
+                            </NumberInput>
+                            <Slider flex="1" focusThumbOnChange={true} value={value} onChange={handleChange} zIndex="0">
+                                <SliderTrack>
+                                    <SliderFilledTrack />
+                                </SliderTrack>
+                                <SliderThumb fontSize="sm" boxSize="32px" children={value} />
+                            </Slider>
+                        </Flex>
+                        <div className="selector">
+                            <Select placeholder="Select Size" width="xs" zIndex="0">
+                                <option value="option1">Small</option>
+                                <option value="option2">Medium</option>
+                                <option value="option3">Large</option>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="proAdd">
+                        {auth.data.isAuthenticated ? (
+                            <button
+                                onClick={() => {
+                                    dispatch(addProductToCart(data._id, value));
+                                    productAdded();
+                                }}
+                            >
+                                Add to Basket
+                            </button>
+                        ) : (
+                            <Link href="/signup">
+                                <button>SignUp to add to Basket</button>
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            </div>
 
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent={"center"}
-            >
-              <MdLocalShipping />
-              <Text>2-3 business days delivery</Text>
-            </Stack>
-          </Stack>
-        </SimpleGrid>
-      </Container>
-    </DefaultLayout>
-  );
+            <div className="proContainer">
+                <h1 className="homeHead">You may also like</h1>
+                <div className="hc1">
+                    {prodLoad ? (
+                        'Loading Similar Products'
+                    ) : (
+                        <Carousel responsive={responsive1} customTransition="1s" transitionDuration={1000}>
+                            {prodLoad
+                                ? ''
+                                : products.map((elem, index) => {
+                                      return (
+                                          <div key={index} className="proCon">
+                                              <Link href={`/products/${elem._id}`}>
+                                                  <div>
+                                                      <img src={elem.imageUrl} alt="proImg" />
+                                                      <span className="homeLook">Quiclook</span>
+                                                  </div>
+                                                  <div>
+                                                      <h1>{elem.brand}</h1>
+                                                      <p>{elem.name}</p>
+                                                  </div>
+                                              </Link>
+                                          </div>
+                                      );
+                                  })}
+                        </Carousel>
+                    )}
+                </div>
+            </div>
+        </>
+    );
 }
+
+export default SingleProduct;
