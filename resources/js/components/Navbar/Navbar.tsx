@@ -66,7 +66,7 @@ const Navbar = (): JSX.Element => {
                     </div>
                     <div className="navIcons">
                         <div>
-                            <RiAdminFill fontSize="20px" onClick={() => navigateTo(route('admin'))} />
+                            <RiAdminFill fontSize="20px" onClick={() => navigateTo(route('admin.dashboard'))} />
                         </div>
                         |
                         <div>

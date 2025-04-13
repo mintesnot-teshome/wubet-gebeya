@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 
 // Main e-commerce routes
 Route::get('/', [ProductController::class, 'index'])->name('home');
+Route::get('/products', [ProductController::class, 'index'])->name('products'); // Added products route
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('product.show');
 
 // Cart routes - protected by auth middleware

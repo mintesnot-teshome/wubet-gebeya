@@ -11,12 +11,21 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all()->groupBy('type');
+        $query = Product::query();
+
+        // Filter by category if provided
+        if ($request->has('category')) {
+            $category = $request->category;
+            $query->where('category', 'LIKE', "%{$category}%");
+        }
+
+        $products = $query->get()->groupBy('type');
 
         return Inertia::render('Home/Home', [
-            'products' => $products
+            'products' => $products,
+            'category' => $request->category ?? null
         ]);
     }
 
