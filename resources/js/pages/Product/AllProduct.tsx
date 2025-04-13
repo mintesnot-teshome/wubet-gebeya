@@ -175,13 +175,17 @@ export default function AllProduct() {
                   boxShadow="md"
                   key={i}
                 >
-                  <InertiaLink href={route('product.show', {id: el._id})}>
-                    <div className="proPageImage">
+                  <div className="proPageImage">
+                    <InertiaLink href={route('product.show', {id: el.id})}>
                       <Img src={el.imageUrl} p="3" />
+                    </InertiaLink>
+                    <InertiaLink href={route('product.show', {id: el.id})}>
                       <span className="prolook">Quicklook</span>
-                    </div>
+                    </InertiaLink>
+                  </div>
 
-                    <Box p="6">
+                  <Box p="6">
+                    <InertiaLink href={route('product.show', {id: el.id || el._id})}>
                       <Box
                         mt="1"
                         fontWeight="semibold"
@@ -208,8 +212,8 @@ export default function AllProduct() {
                         ₹ {el.price * 81}
                         <Box as="span" color="gray.600" fontSize="sm"></Box>
                       </Box>
-                    </Box>
-                  </InertiaLink>
+                    </InertiaLink>
+                  </Box>
                 </Box>
               ))}
           </div>

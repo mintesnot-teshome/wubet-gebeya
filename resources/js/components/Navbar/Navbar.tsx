@@ -137,11 +137,11 @@ const Navbar = (): JSX.Element => {
                             <MdOutlineCancel />
                         </label>
                         <li>
-                            <InertiaLink href={route('products')} className="desktopItem">
+                            <InertiaLink href={route('products', { sort: 'newest' })} className="desktopItem">
                                 New
                             </InertiaLink>
                             <input type="checkbox" id="showMega" />
-                            <InertiaLink href={route('products')}>
+                            <InertiaLink href={route('products', { sort: 'newest' })}>
                                 <label htmlFor="showMega" className="mobileItem">
                                     New
                                 </label>
@@ -152,25 +152,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">All New</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Just Dropped</InertiaLink>
+                                                <InertiaLink href={route('products', { sort: 'newest' })}>Just Dropped</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', sort: 'newest' })}>New Makeup</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Skincare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', sort: 'newest' })}>New Skincare</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Haircare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', sort: 'newest' })}>New Haircare</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Fragrance</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', sort: 'newest' })}>New Fragrance</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Bath & Body New</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', sort: 'newest' })}>New Bath & Body</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Tools & Brushes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', sort: 'newest' })}>Tools & Brushes</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -219,25 +219,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">All Makeup</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Face Foundation</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Face Foundation</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">BB & CC Creams</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>BB & CC Creams</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Tinted Moisturizer</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Tinted Moisturizer</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Concealer</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Concealer</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Face Primer</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Face Primer</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Contour Color</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Contour Color</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Correct Face Sets</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'face' })}>Correct Face Sets</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -245,25 +245,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Eye</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Eye Palettes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eye Palettes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Mascara</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Mascara</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eyeliner</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eyeliner</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eyebrow</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eyebrow</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eyelash Serums</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eyelash Serums</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eye Primer</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eye Primer</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eye Sets</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'eye' })}>Eye Sets</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -271,25 +271,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Lip</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Lipstick</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lipstick</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Gloss</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lip Gloss</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Balm & Treatment</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lip Balm & Treatment</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Liquid Lipstick</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Liquid Lipstick</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Stain</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lip Stain</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Liner</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lip Liner</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Plumper</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'lip' })}>Lip Plumper</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -297,25 +297,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Cheek</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Blush</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Blush</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Bronzer</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Bronzer</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Highlighter</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Highlighter</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Contour</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Contour</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Accessories</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Accessories</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Makeup Palettes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Makeup Palettes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Cheek Palettes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', type: 'cheek' })}>Cheek Palettes</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -355,25 +355,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">All Skincare</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Moisturizers</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'moisturizers' })}>Moisturizers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Night Creams</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'moisturizers' })}>Night Creams</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Face Oils</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'moisturizers' })}>Face Oils</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Mists & Essences</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'moisturizers' })}>Mists & Essences</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">BB & CC</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'moisturizers' })}>BB & CC</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Creams Cleansers</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'cleansers' })}>Creams Cleansers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Exfoliators Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'cleansers' })}>Exfoliators</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -381,25 +381,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Treatments</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Face Serums</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'treatments' })}>Face Serums</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Blemish & Acne</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'treatments' })}>Blemish & Acne</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Facial Peels</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'treatments' })}>Facial Peels</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Face Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'masks' })}>Face Masks</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Sheet Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'masks' })}>Sheet Masks</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'masks' })}>Masks</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eye Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'masks' })}>Eye Masks</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -741,54 +741,51 @@ const Navbar = (): JSX.Element => {
                             </div>
                         </li>
                         <li>
-                            <InertiaLink href={route('products', { category: 'skincare' })} className="desktopItem">
+                            <InertiaLink href={route('products', { max_price: 20 })} className="desktopItem">
                                 Beauty Under $20
                             </InertiaLink>
                             <div className="megaBox">
                                 <div className="contentBox">
                                     <div className="rowBox">
-                                        <header className="navHeader">All New</header>
+                                        <header className="navHeader">Beauty Under $20</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Just Dropped</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'makeup', max_price: 20 })}>Makeup Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', max_price: 20 })}>Skincare Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Skincare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', max_price: 20 })}>Hair Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Haircare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', max_price: 20 })}>Fragrance Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Fragrance</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', max_price: 20 })}>Bath & Body Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Bath & Body New</InertiaLink>
-                                            </li>
-                                            <li>
-                                                <InertiaLink href="">Tools & Brushes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', max_price: 20 })}>Tools Under $20</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="rowBox">
-                                        <header className="navHeader">All Products</header>
+                                        <header className="navHeader">Popular Under $20</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">The Next Big Thing</InertiaLink>
+                                                <InertiaLink href={route('products', { max_price: 10 })}>Under $10</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Bestsellers</InertiaLink>
+                                                <InertiaLink href={route('products', { max_price: 15 })}>Under $15</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Quizzes & Buying Guides</InertiaLink>
+                                                <InertiaLink href={route('products', { sort: 'popular', max_price: 20 })}>Bestsellers Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean Beauty Guide</InertiaLink>
+                                                <InertiaLink href={route('products', { sort: 'newest', max_price: 20 })}>New Arrivals Under $20</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean+ Planet</InertiaLink>
+                                                <InertiaLink href={route('products', { max_price: 20 })}>All Under $20</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>

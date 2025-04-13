@@ -281,7 +281,7 @@ function SingleProduct() {
                         <Carousel responsive={responsive1} customTransition="1s" transitionDuration={1000}>
                             {similarProducts.map((product) => (
                                 <div key={product.id} className="proCon">
-                                    <Link href={route('product.show', product.id)}>
+                                    <Link href={route('product.show', {id: product.id})}>
                                         <div>
                                             <img src={product.imageUrl} alt="proImg" />
                                             <span className="homeLook">Quicklook</span>

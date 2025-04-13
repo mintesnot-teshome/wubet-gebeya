@@ -16,24 +16,72 @@ class ProductController extends Controller
         // Set up base query
         $baseQuery = Product::query();
 
+        // Special case for home page route ('/')
+        if ($request->path() === '/' && !$request->hasAny(['category', 'type', 'max_price', 'sort'])) {
+            // For the home page - group products for carousel displays
+            $products = [
+                'featured' => (clone $baseQuery)->limit(10)->get(),
+                'new' => (clone $baseQuery)->orderBy('id', 'desc')->limit(10)->get(),
+                'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(10)->get(),
+                'category' => (clone $baseQuery)->where('category', 'makeup')->limit(8)->get(),
+                'guide' => (clone $baseQuery)->where('category', 'skincare')->limit(8)->get(),
+            ];
+
+            return Inertia::render('Home/Home', [
+                'products' => $products
+            ]);
+        }
+
         // Filter by category if provided
         if ($request->has('category')) {
             $category = $request->category;
             $baseQuery->where('category', 'LIKE', "%{$category}%");
         }
 
-        // Fetch products grouped by their actual types from the database
-        $products = [
-            'featured' => (clone $baseQuery)->limit(10)->get(), // Just get some products as featured
-            'new' => (clone $baseQuery)->orderBy('id', 'desc')->limit(10)->get(), // Get newest products
-            'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(10)->get(), // Get highest rated products
-            'category' => (clone $baseQuery)->where('category', 'makeup')->limit(8)->get(), // Get makeup category products
-            'guide' => (clone $baseQuery)->where('category', 'skincare')->limit(8)->get(), // Get skincare products as guides
-        ];
+        // Filter by type if provided
+        if ($request->has('type')) {
+            $type = $request->type;
+            $baseQuery->where('type', 'LIKE', "%{$type}%");
+        }
 
-        return Inertia::render('Home/Home', [
-            'products' => $products,
-            'category' => $request->category ?? null
+        // Filter by price range if provided
+        if ($request->has('max_price')) {
+            $baseQuery->where('price', '<=', $request->max_price);
+        }
+
+        // Sort products if requested
+        if ($request->has('sort')) {
+            $sortOption = $request->sort;
+
+            if ($sortOption === 'newest') {
+                $baseQuery->orderBy('id', 'desc');
+            } else if ($sortOption === 'popular') {
+                $baseQuery->orderBy('stars', 'desc')->orderBy('numReviews', 'desc');
+            } else if ($sortOption === 'price_low') {
+                $baseQuery->orderBy('price', 'asc');
+            } else if ($sortOption === 'price_high') {
+                $baseQuery->orderBy('price', 'desc');
+            }
+        }
+
+        // Handle any custom sorting from frontend
+        if ($request->has('orderBy')) {
+            $orderDirection = $request->input('orderBy', 'desc');
+            $sortField = $request->input('sort', 'id');
+            $baseQuery->orderBy($sortField, $orderDirection);
+        }
+
+        // For filtered views, use the AllProduct component
+        $filteredProducts = $baseQuery->paginate(24);
+
+        return Inertia::render('Product/AllProduct', [
+            'products' => $filteredProducts,
+            'filters' => [
+                'category' => $request->category ?? null,
+                'type' => $request->type ?? null,
+                'max_price' => $request->max_price ?? null,
+                'sort' => $request->sort ?? null
+            ]
         ]);
     }
 
@@ -80,7 +128,7 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
 
-        return Inertia::render('ProductDetails/ProductDetails', [
+        return Inertia::render('Product/SingleProduct', [
             'product' => $product,
             'similarProducts' => $similarProducts
         ]);
