@@ -13,32 +13,57 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import { router } from '@inertiajs/react';
 import { authLogin } from "../../Redux/auth/actions";
 import { AUTH_LOGIN_RESET } from "../../Redux/auth/actionTypes";
 import { getCart } from "../../Redux/cart/actions";
+import DefaultLayout from "../../layouts/default-layout";
 
-const initialState = {
+interface FormData {
+  email: string;
+  password: string;
+}
+
+interface AuthState {
+  userLogin: {
+    loading: boolean;
+    error: boolean;
+    message: string;
+  };
+  userRegister: {
+    loading: boolean;
+    error: boolean;
+    message: string;
+  };
+  userLogout: {
+    message: string;
+  };
+  data: {
+    isAuthenticated: boolean;
+    token: string | null;
+    user: any | null;
+  };
+}
+
+const initialState: FormData = {
   email: "",
   password: "",
 };
-function Login() {
+
+function Login(): JSX.Element {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate = useNavigate();
-  const [formData, setFormData] = React.useState(initialState);
-  const authState = useSelector((state) => state.auth);
-  // console.log("authState: ", authState);
+  const [formData, setFormData] = useState<FormData>(initialState);
+  const authState = useSelector((state: any) => state.auth) as AuthState;
   const dispatch = useDispatch();
 
-
-
-  React.useEffect(() => {
+  useEffect(() => {
     onOpen();
     if (authState.userLogin.message === "User does not exist") {
       toast({
-        title: authState.message,
+        title: authState.userLogin.message,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -47,7 +72,7 @@ function Login() {
     }
     if (authState.userLogin.message === "Password is incorrect") {
       toast({
-        title: authState.message,
+        title: authState.userLogin.message,
         status: "warning",
         duration: 3000,
         isClosable: true,
@@ -65,31 +90,31 @@ function Login() {
       });
       dispatch({ type: AUTH_LOGIN_RESET });
       setTimeout(() => {
-        navigate("/");
+        router.visit('/');
       }, 2000);
     }
-  }, [dispatch, onOpen, navigate, authState, toast]);
+  }, [dispatch, onOpen, authState, toast]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    // console.log(formData);
     dispatch(authLogin(formData));
   };
 
   if(authState.data.isAuthenticated) {
-    return <Navigate to={'/'}/>
+    router.visit('/');
+    return null;
   }
-  return (
-    <>
-      {/* <Button onClick={onOpen}>Open Modal</Button> */}
 
+  return (
+    <DefaultLayout>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "lg" }}>
         <ModalOverlay
           onClick={() => {
-            navigate("/");
+            router.visit("/");
           }}
         />
         <ModalContent>
@@ -99,7 +124,7 @@ function Login() {
             <FormControl>
               <FormLabel>Email</FormLabel>
               <Input
-                type={"email"}
+                type="email"
                 placeholder="email"
                 name="email"
                 onChange={handleChange}
@@ -109,7 +134,7 @@ function Login() {
             <FormControl mt={4}>
               <FormLabel>Password</FormLabel>
               <Input
-                type={"password"}
+                type="password"
                 placeholder="password"
                 name="password"
                 onChange={handleChange}
@@ -124,7 +149,7 @@ function Login() {
             <Button
               onClick={() => {
                 onClose();
-                navigate("/");
+                router.visit("/");
               }}
             >
               Cancel
@@ -132,7 +157,7 @@ function Login() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </DefaultLayout>
   );
 }
 

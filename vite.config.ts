@@ -11,7 +11,14 @@ export default defineConfig({
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
         }),
-        react(),
+        react({
+            babel: {
+                plugins: [
+                    'babel-plugin-macros',
+                    '@babel/plugin-syntax-jsx',
+                ],
+            }
+        }),
         tailwindcss(),
     ],
     esbuild: {
@@ -23,12 +30,15 @@ export default defineConfig({
         esbuildOptions: {
             loader: {
                 '.js': 'jsx',
+                '.ts': 'tsx',
             }
         }
     },
     resolve: {
         alias: {
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+            '@': resolve(__dirname, 'resources/js'),
         },
+        extensions: ['.js', '.jsx', '.ts', '.tsx']
     },
 });

@@ -40,6 +40,6 @@ class EcommerceController extends Controller
     // This will be protected by admin middleware later
     public function admin()
     {
-        return Inertia::render('Admin/AdminApp');
+        return Inertia::render('Admin/Dashboard/Admin');
     }
 }

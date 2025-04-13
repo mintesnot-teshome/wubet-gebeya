@@ -7,7 +7,7 @@ import { initializeTheme } from './hooks/use-appearance';
 import ReduxProvider from './components/ReduxProvider';
 import { ChakraProvider } from '@chakra-ui/react';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Wubet-Gebeya';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

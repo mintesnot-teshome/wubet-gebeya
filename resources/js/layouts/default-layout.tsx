@@ -1,24 +1,24 @@
 import React, { ReactNode } from 'react';
 import { Head } from '@inertiajs/react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
+import Navbar from '../components/Navbar/Navbar';
+import Footer from '../components/Footer/Footer';
 
 interface DefaultLayoutProps {
-  children: ReactNode;
   title?: string;
+  children: ReactNode;
 }
 
-export default function DefaultLayout({ children, title = 'Wubet Gebeya' }: DefaultLayoutProps) {
+const DefaultLayout = ({ title = 'Wubet Gebeya', children }: DefaultLayoutProps): JSX.Element => {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Head title={title} />
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
-      </div>
-    </>
+      <Navbar />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+    </div>
   );
-}
+};
+
+export default DefaultLayout;

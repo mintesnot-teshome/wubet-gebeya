@@ -1,41 +1,35 @@
 import React from "react";
-import { Box, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, useToast } from "@chakra-ui/react";
 import DefaultLayout from '@/layouts/default-layout';
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { router, usePage } from '@inertiajs/react';
-import { useToast } from "@chakra-ui/react";
+import { usePage } from '@inertiajs/react';
 import Left from "../../components/Cart/left/Left";
 import Right from "../../components/Cart/right/Right";
 
-export default function Cart() {
-  const auth = useSelector((store) => store.auth);
-  const toast = useToast();
-
-  // If user is not authenticated, redirect to login
-  if (auth.data.isAuthenticated === false) {
-    toast({
-      title: "Login Error",
-      description: "Please login first to access cart",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-      position: "top",
-    });
-
-    toast({
-      title: "Redirecting",
-      description: "Redirecting to signup page",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-      position: "top",
-    });
-
-    // Use Inertia's router to redirect
-    router.visit(route('register'));
-    return null;
+interface CartItem {
+  id: number;
+  quantity: number;
+  product: {
+    id: number;
+    name: string;
+    brand: string;
+    price: number;
+    imageUrl: string;
   }
+}
+
+interface CartProps {
+  cartItems: CartItem[];
+  cartSummary: {
+    subtotal: number;
+    tax: number;
+    total: number;
+    itemCount: number;
+  }
+}
+
+export default function Cart({ cartItems, cartSummary }: CartProps) {
+  const { auth } = usePage().props;
+  const toast = useToast();
 
   return (
     <DefaultLayout title="Cart">
@@ -64,8 +58,8 @@ export default function Cart() {
           m="auto"
           spacing="30px"
         >
-          <Left />
-          <Right />
+          <Left cartItems={cartItems} />
+          <Right cartSummary={cartSummary} />
         </SimpleGrid>
       </Box>
     </DefaultLayout>
