@@ -13,15 +13,23 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        // Set up base query
+        $baseQuery = Product::query();
 
         // Filter by category if provided
         if ($request->has('category')) {
             $category = $request->category;
-            $query->where('category', 'LIKE', "%{$category}%");
+            $baseQuery->where('category', 'LIKE', "%{$category}%");
         }
 
-        $products = $query->get()->groupBy('type');
+        // Fetch products grouped by their actual types from the database
+        $products = [
+            'featured' => (clone $baseQuery)->limit(10)->get(), // Just get some products as featured
+            'new' => (clone $baseQuery)->orderBy('id', 'desc')->limit(10)->get(), // Get newest products
+            'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(10)->get(), // Get highest rated products
+            'category' => (clone $baseQuery)->where('category', 'makeup')->limit(8)->get(), // Get makeup category products
+            'guide' => (clone $baseQuery)->where('category', 'skincare')->limit(8)->get(), // Get skincare products as guides
+        ];
 
         return Inertia::render('Home/Home', [
             'products' => $products,

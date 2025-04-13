@@ -95,7 +95,7 @@ const Home: React.FC<HomeProps> = ({ products }) => {
 
     const chosenForYou = groupedProducts['featured'] || [];
     const justDropped = groupedProducts['new'] || [];
-    const sellingFast = groupedProducts['bestseller'] || [];
+    const sellingFast = groupedProducts['popular'] || []; // Updated from 'bestseller' to 'popular'
     const featuredCategories = groupedProducts['category'] || [];
     const guidanceProducts = groupedProducts['guide'] || [];
 
