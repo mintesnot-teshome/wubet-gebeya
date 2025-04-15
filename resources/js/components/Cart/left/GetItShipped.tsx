@@ -1,14 +1,14 @@
 import {
   Box,
   Button,
-  Card,
-  CardBody,
   Divider,
   Heading,
   HStack,
   Image,
   Text,
   useToast,
+  Stack,
+  Flex,
 } from "@chakra-ui/react";
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import React from "react";
@@ -47,6 +47,9 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
           isClosable: true,
           position: "top",
         });
+        
+        // Dispatch event to update cart count
+        window.dispatchEvent(new CustomEvent('cart-updated'));
       },
     });
   };
@@ -63,6 +66,9 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
           isClosable: true,
           position: "top",
         });
+        
+        // Dispatch event to update cart count when an item is removed
+        window.dispatchEvent(new CustomEvent('cart-updated'));
       },
     });
   };
@@ -98,7 +104,7 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
         </Text>
         {cartItems &&
           cartItems.map((item) => (
-            <Card
+            <Box
               mt="10px"
               mb="20px"
               borderRadius={"0px"}
@@ -106,7 +112,7 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
               h="auto"
               key={item.id}
             >
-              <CardBody p="10px 5px">
+              <Box p="10px 5px">
                 <HStack spacing="24px" alignItems="flex-start" gap={2}>
                   <Box w={{ lg: "15%", md: "15%", base: "40%" }} h="auto">
                     <Image
@@ -200,8 +206,8 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
                     </Box>
                   </Box>
                 </HStack>
-              </CardBody>
-            </Card>
+              </Box>
+            </Box>
           ))}
 
         <Divider />

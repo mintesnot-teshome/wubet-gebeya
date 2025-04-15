@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Heading, SimpleGrid, useToast } from "@chakra-ui/react";
+import { Box, Flex, Heading, useToast } from "@chakra-ui/react";
 import DefaultLayout from '@/layouts/default-layout';
 import { usePage } from '@inertiajs/react';
 import Left from "../../components/Cart/left/Left";
@@ -42,25 +41,19 @@ export default function Cart({ cartItems, cartSummary }: CartProps) {
         p="10px"
       >
         <Heading
-          as="h2"
-          size="lg"
-          fontWeight="normal"
-          textAlign="center"
-          pt="30px"
-          mb="50px"
+          fontSize={{ lg: "25px", md: "20px", base: "25px" }}
+          pb={{ lg: "20px", md: "20px", base: "10px" }}
         >
-          My Shopping Bag
+          My Basket
         </Heading>
-
-        <SimpleGrid
-          columns={{ lg: 2, md: 1, base: 1 }}
-          w="95%"
-          m="auto"
-          spacing="30px"
+        <Flex
+          gap={{ lg: "15px", md: "15px" }}
+          h="auto"
+          flexDirection={{ lg: "row", md: "row", base: "column-reverse" }}
         >
           <Left cartItems={cartItems} />
           <Right cartSummary={cartSummary} />
-        </SimpleGrid>
+        </Flex>
       </Box>
     </DefaultLayout>
   );

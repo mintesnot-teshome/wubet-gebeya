@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -14,8 +14,12 @@ import {
   Flex,
   Grid,
   useToast,
+  Box,
+  Image,
+  Text,
+  SimpleGrid,
+  Button
 } from "@chakra-ui/react";
-import { Box, Image, Text, SimpleGrid, Button } from "@chakra-ui/react";
 import { router, usePage } from '@inertiajs/react';
 
 // Define TypeScript interfaces
@@ -29,16 +33,17 @@ interface Product {
   type: string;
 }
 
-interface Props {
+interface InertiaPageProps {
   products: Product[];
+  [key: string]: any; // Index signature to satisfy PageProps constraint
 }
 
-function Dashboard(): JSX.Element {
-  const { products } = usePage<Props>().props;
+function Dashboard(): React.ReactElement {
+  const { products } = usePage<InertiaPageProps>().props;
   const [product, setProduct] = useState<Partial<Product>>({});
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const initialRef = React.useRef(null);
-  const finalRef = React.useRef(null);
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
   const toast = useToast();
 
   const handleFormData = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
@@ -51,7 +56,7 @@ function Dashboard(): JSX.Element {
 
   const handleSubmit = (): void => {
     if (product.id) {
-      router.put(route('products.update', product.id), product as any, {
+      router.put(route('products.update', product.id), product, {
         onSuccess: () => {
           onClose();
           toast({

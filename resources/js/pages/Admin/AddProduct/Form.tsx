@@ -5,33 +5,66 @@ import {
   Button,
   Box,
   Flex,
+  useToast,
+  Select,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addProduct } from "../../../Redux/products/actions";
+import { router, usePage } from '@inertiajs/react';
+
 const initialState = {
   name: "",
   imageUrl: "",
   category: "",
   price: 0,
   brand: "",
-  numReviews: "",
+  numReviews: 0,
   stars: 0,
   type: "",
 };
 
 const Form = () => {
   const [formData, setFormData] = useState(initialState);
-  const dispatch = useDispatch();
+  const [processing, setProcessing] = useState(false);
+  const { categories } = usePage().props;
+  const toast = useToast();
+
   function handleChange({ target }) {
     let val = target.value;
-    if (target.name === "price" || target.name === "stars") {
+    if (target.name === "price" || target.name === "stars" || target.name === "numReviews") {
       val = +target.value;
     }
     setFormData({ ...formData, [target.name]: val });
   }
+
   function submit() {
-    dispatch(addProduct(formData));
+    setProcessing(true);
+
+    router.post(route('products.store'), formData, {
+      onSuccess: () => {
+        setFormData(initialState);
+        setProcessing(false);
+        toast({
+          title: "Product created successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      },
+      onError: (errors) => {
+        setProcessing(false);
+        Object.keys(errors).forEach((key) => {
+          toast({
+            title: "Error",
+            description: errors[key],
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
+        });
+      }
+    });
   }
 
   return (
@@ -70,14 +103,17 @@ const Form = () => {
         >
           <Box w={{ base: "100%", md: "50%" }}>
             <FormLabel>Category</FormLabel>
-            <Input
+            <Select
               mb="15px"
-              type="text"
-              placeholder="product category"
               name="category"
               onChange={handleChange}
               value={formData.category}
-            />
+              placeholder="Select category"
+            >
+              {categories && categories.map((category, index) => (
+                <option key={index} value={category}>{category}</option>
+              ))}
+            </Select>
           </Box>
           <Box w={{ base: "100%", md: "50%" }}>
             <FormLabel>Brand</FormLabel>
@@ -110,8 +146,11 @@ const Form = () => {
             <FormLabel>Rating</FormLabel>
             <Input
               mb="15px"
-              type="text"
-              placeholder="enter rating"
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              placeholder="enter rating (0-5)"
               name="stars"
               onChange={handleChange}
               value={formData.stars}
@@ -124,20 +163,26 @@ const Form = () => {
         >
           <Box w={{ base: "100%", md: "50%" }}>
             <FormLabel>Type</FormLabel>
-            <Input
+            <Select
               mb="15px"
-              type="text"
-              placeholder="Enter product type"
               name="type"
               onChange={handleChange}
               value={formData.type}
-            />
+              placeholder="Select product type"
+            >
+              <option value="featured">Featured</option>
+              <option value="new">New</option>
+              <option value="bestseller">Bestseller</option>
+              <option value="popular">Popular</option>
+              <option value="sale">Sale</option>
+            </Select>
           </Box>
           <Box w={{ base: "100%", md: "50%" }}>
             <FormLabel>Price</FormLabel>
             <Input
               mb="15px"
               type="number"
+              step="0.01"
               placeholder="Product price in $"
               name="price"
               onChange={handleChange}
@@ -148,8 +193,14 @@ const Form = () => {
 
         <br />
         <Flex justifyContent="center" gap={2}>
-          <Button onClick={() => submit()} colorScheme="teal" type="submit">
-            submit
+          <Button
+            onClick={submit}
+            colorScheme="teal"
+            type="submit"
+            isLoading={processing}
+            loadingText="Submitting"
+          >
+            Submit
           </Button>
 
           <Button
@@ -159,7 +210,7 @@ const Form = () => {
               setFormData(initialState);
             }}
           >
-            reset
+            Reset
           </Button>
         </Flex>
       </Box>

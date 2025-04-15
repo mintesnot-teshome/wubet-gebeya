@@ -27,6 +27,7 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import DefaultLayout from "../../layouts/default-layout";
 import './SingleProduct.css';
+import axios from 'axios';
 
 const responsive1 = {
     superLargeDesktop: {
@@ -77,12 +78,26 @@ interface PageProps {
 
 function SingleProduct() {
     const [value, setValue] = useState(1);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
     const { product, similarProducts, auth } = usePage<PageProps>().props;
 
     const handleChange = (value) => setValue(value);
     const toast = useToast();
 
-    const addToCart = () => {
+    // Function to refresh the cart count in the UI
+    const refreshCartCount = async () => {
+        try {
+            const response = await fetch(route('cart.count'));
+            const data = await response.json();
+            // We can't directly update the Navbar's state from here,
+            // but we can dispatch a custom event that the Navbar component can listen for
+            window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.count } }));
+        } catch (error) {
+            console.error('Failed to fetch updated cart count:', error);
+        }
+    };
+
+    const addToCart = async () => {
         if (!auth.user) {
             // Not logged in
             toast({
@@ -100,32 +115,42 @@ function SingleProduct() {
             return;
         }
 
-        router.post(route('cart.add'), {
-            product_id: product.id,
-            quantity: value
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: 'Product Added',
-                    description: 'We have added your product to Basket',
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                    position: 'top',
-                });
-            },
-            onError: () => {
-                toast({
-                    title: 'Error',
-                    description: 'Could not add product to cart',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                    position: 'top',
-                });
-            },
-            preserveState: true,
-        });
+        // Set loading state
+        setIsAddingToCart(true);
+
+        try {
+            // Use axios to make an AJAX request
+            const response = await axios.post(route('cart.add'), {
+                product_id: product.id,
+                quantity: value
+            });
+
+            // Show success notification
+            toast({
+                title: 'Product Added',
+                description: 'We have added your product to Basket',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+                position: 'top',
+            });
+
+            // Refresh the cart count in the UI
+            await refreshCartCount();
+            
+        } catch (error) {
+            // Handle error
+            toast({
+                title: 'Error',
+                description: 'Could not add product to cart',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                position: 'top',
+            });
+        } finally {
+            setIsAddingToCart(false);
+        }
     };
 
     const ratingStar = Array.from({ length: 5 }, (elem, index) => {
@@ -264,8 +289,8 @@ function SingleProduct() {
                         </div>
                         <div className="proAdd">
                             {auth.user ? (
-                                <button onClick={addToCart}>
-                                    Add to Basket
+                                <button onClick={addToCart} disabled={isAddingToCart}>
+                                    {isAddingToCart ? 'Adding...' : 'Add to Basket'}
                                 </button>
                             ) : (
                                 <Link href={route('login')}>

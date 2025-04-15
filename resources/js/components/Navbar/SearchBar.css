@@ -1,98 +1,99 @@
 .search-container {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
 }
 
 .suggestions-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  max-height: 400px;
-  overflow-y: auto;
-  background-color: white;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
 }
 
 .suggestion-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 15px;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.suggestion-item:hover, .suggestion-item.selected {
-  background-color: #f9f9f9;
+.suggestion-item:hover,
+.suggestion-item.selected {
+    background-color: #f9f9f9;
 }
 
 .suggestion-content {
-  display: flex;
-  align-items: center;
-  max-width: 85%;
+    display: flex;
+    align-items: center;
+    max-width: 85%;
 }
 
 .suggestion-image {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 12px;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
 }
 
 .suggestion-text {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .suggestion-main {
-  font-size: 14px;
-  color: #333;
+    font-size: 14px;
+    color: #333;
 }
 
 .suggestion-main strong {
-  font-weight: 600;
-  color: #000;
+    font-weight: 600;
+    color: #000;
 }
 
 .suggestion-meta {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  color: #666;
-  margin-top: 3px;
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+    margin-top: 3px;
 }
 
 .suggestion-type {
-  font-size: 12px;
-  color: #888;
-  background: #f0f0f0;
-  padding: 3px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
+    font-size: 12px;
+    color: #888;
+    background: #f0f0f0;
+    padding: 3px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
 }
 
 .search-loading {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
 }
 
 .search-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  border-left: 2px solid #333;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left: 2px solid #333;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }

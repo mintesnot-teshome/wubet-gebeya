@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   IconButton,
   Avatar,
@@ -31,7 +31,6 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
-import { ReactText } from "react";
 import Dashboard from "./Dashboard";
 
 // Define interface for auth user data
@@ -41,10 +40,11 @@ interface User {
   email: string;
 }
 
-interface PageProps {
+interface InertiaPageProps {
   auth: {
     user: User;
   };
+  [key: string]: any; // Index signature to satisfy PageProps constraint
 }
 
 interface LinkItemProps {
@@ -52,6 +52,7 @@ interface LinkItemProps {
   icon: IconType;
   url: string;
 }
+
 const LinkItems: Array<LinkItemProps> = [
   { name: "Dashboard", icon: FiCompass, url: "/admin/dashboard" },
   { name: "Add Product", icon: FiStar, url: "/admin/products/create" },
@@ -60,7 +61,7 @@ const LinkItems: Array<LinkItemProps> = [
 function SidebarWithHeader({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -94,6 +95,7 @@ function SidebarWithHeader({
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  display?: any;
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -128,9 +130,10 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
-  children: ReactText;
+  children: string;
   url: string;
 }
+
 const NavItem = ({ icon, children, url }: NavItemProps) => {
   return (
     <Flex
@@ -151,8 +154,9 @@ const NavItem = ({ icon, children, url }: NavItemProps) => {
 interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
+
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { auth } = usePage<PageProps>().props;
+  const { auth } = usePage<InertiaPageProps>().props;
 
   return (
     <Flex

@@ -1,8 +1,8 @@
-import { Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Portal, useToast } from '@chakra-ui/react';
+import { Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Portal, useToast, Box, Badge } from '@chakra-ui/react';
 import { Link as InertiaLink, router, usePage } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
-import { BsBag, BsSearch } from 'react-icons/bs';
+import { BsBag } from 'react-icons/bs';
 import { FaBars } from 'react-icons/fa';
 import { MdOutlineCancel } from 'react-icons/md';
 import { RiAdminFill } from 'react-icons/ri';
@@ -12,6 +12,7 @@ import { authLogout } from '../../Redux/auth/actions';
 import Logo from './Logo.png';
 import logo2 from './logo2.png';
 import './Navbar.css';
+import SearchBar from './SearchBar';
 
 interface AuthState {
   data: {
@@ -32,7 +33,7 @@ const Navbar = (): JSX.Element => {
     const dispatch = useDispatch();
     const auth = useSelector((state: RootState) => state.auth);
     const toast = useToast();
-    const [searchTerm, setSearchTerm] = useState('');
+    const [cartItemCount, setCartItemCount] = useState(0);
 
     // Get Inertia auth state directly
     const { auth: inertiaAuth } = usePage().props as any;
@@ -40,37 +41,41 @@ const Navbar = (): JSX.Element => {
 
     useEffect(() => {
         if (isAuthenticated) {
+            // Legacy Redux call - kept for compatibility
             dispatch(getCart());
+
+            // Fetch cart count from Laravel backend
+            fetchCartCount();
+
+            // Add event listener for cart updates
+            const handleCartUpdate = (event: CustomEvent) => {
+                setCartItemCount(event.detail.count);
+            };
+
+            // Add event listener for the custom cart-updated event
+            window.addEventListener('cart-updated', handleCartUpdate as EventListener);
+
+            // Clean up the event listener when component unmounts
+            return () => {
+                window.removeEventListener('cart-updated', handleCartUpdate as EventListener);
+            };
+        } else {
+            setCartItemCount(0);
         }
     }, [dispatch, isAuthenticated]);
 
-    const navigateTo = (path: string): void => {
-        router.visit(path);
+    const fetchCartCount = async () => {
+        try {
+            const response = await fetch(route('cart.count'));
+            const data = await response.json();
+            setCartItemCount(data.count);
+        } catch (error) {
+            console.error('Failed to fetch cart count:', error);
+        }
     };
 
-    // Handle search
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!searchTerm.trim()) {
-            return;
-        }
-
-        // Navigate to products page with search term
-        router.get(route('products'), { search: searchTerm.trim() }, {
-            preserveState: true,
-            only: ['products', 'filters'],
-        });
-
-        // Show toast notification
-        toast({
-            title: 'Searching...',
-            description: `Showing results for "${searchTerm.trim()}"`,
-            status: 'info',
-            duration: 2000,
-            isClosable: true,
-            position: 'top',
-        });
+    const navigateTo = (path: string): void => {
+        router.visit(path);
     };
 
     return (
@@ -91,15 +96,7 @@ const Navbar = (): JSX.Element => {
                         </InertiaLink>
                     </div>
                     <div>
-                        <form onSubmit={handleSearch} className="navSearch">
-                            <BsSearch />
-                            <input
-                                type="search"
-                                placeholder="Search products, brands..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </form>
+                        <SearchBar />
                     </div>
                     <div className="navIcons">
                         <div>
@@ -120,9 +117,23 @@ const Navbar = (): JSX.Element => {
                             )}
                         </div>
                         |
-                        <div>
+                        <div style={{ position: 'relative' }}>
                             {isAuthenticated ? (
-                                <BsBag fontSize="20px" onClick={() => navigateTo(route('cart'))} />
+                                <Box position="relative" display="inline-block">
+                                    <BsBag fontSize="20px" onClick={() => navigateTo(route('cart'))} cursor="pointer" />
+                                    {cartItemCount > 0 && (
+                                        <Badge
+                                            colorScheme="red"
+                                            borderRadius="full"
+                                            position="absolute"
+                                            top="-8px"
+                                            right="-8px"
+                                            fontSize="0.7em"
+                                        >
+                                            {cartItemCount}
+                                        </Badge>
+                                    )}
+                                </Box>
                             ) : (
                                 <BsBag fontSize="20px" onClick={() => {
                                     toast({

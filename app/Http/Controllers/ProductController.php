@@ -203,7 +203,7 @@ class ProductController extends Controller
     {
         $products = Product::all();
 
-        return Inertia::render('Admin/Dashboard/Dashboard', [
+        return Inertia::render('Admin/Dashboard/Admin', [
             'products' => $products
         ]);
     }
@@ -214,11 +214,11 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         $searchTerm = $request->query('q');
-        
+
         if (empty($searchTerm)) {
             return redirect()->route('products');
         }
-        
+
         // Redirect to products page with search parameter
         return redirect()->route('products', ['search' => $searchTerm]);
     }
@@ -229,7 +229,7 @@ class ProductController extends Controller
     public function searchSuggestions(Request $request)
     {
         $query = $request->input('q', '');
-        
+
         if (empty($query) || strlen($query) < 2) {
             return response()->json([
                 'suggestions' => []

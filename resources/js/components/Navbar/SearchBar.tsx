@@ -52,7 +52,7 @@ const SearchBar: React.FC = () => {
 
   const fetchSuggestions = async () => {
     if (!searchTerm.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const response = await axios.get(route('product.search.suggestions'), {
@@ -69,11 +69,11 @@ const SearchBar: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!searchTerm.trim()) {
       return;
     }
-    
+
     executeSuggestion({ text: searchTerm.trim(), type: 'product' });
   };
 
@@ -95,9 +95,9 @@ const SearchBar: React.FC = () => {
 
   const executeSuggestion = (suggestion: Suggestion) => {
     setShowSuggestions(false);
-    
+
     let params = {};
-    
+
     if (suggestion.type === 'category') {
       params = { category: suggestion.text };
     } else if (suggestion.type === 'brand') {
@@ -110,13 +110,13 @@ const SearchBar: React.FC = () => {
       // Regular search query
       params = { search: suggestion.text };
     }
-    
+
     // Navigate to products page with search param
     router.get(route('products'), params, {
       preserveState: true,
       only: ['products', 'filters'],
     });
-    
+
     // Show toast notification
     toast({
       title: 'Searching...',
@@ -131,10 +131,10 @@ const SearchBar: React.FC = () => {
   // Highlight matching text in suggestions
   const highlightMatch = (text: string) => {
     if (!searchTerm) return text;
-    
+
     const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
-    
+
     return (
       <>
         {parts.map((part, i) => (
@@ -148,9 +148,9 @@ const SearchBar: React.FC = () => {
     <div className="search-container" ref={searchRef}>
       <form onSubmit={handleSubmit} className="navSearch">
         <BsSearch />
-        <input 
-          type="search" 
-          placeholder="Search products, brands..." 
+        <input
+          type="search"
+          placeholder="Search products, brands..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => {
@@ -160,11 +160,11 @@ const SearchBar: React.FC = () => {
           autoComplete="off"
         />
       </form>
-      
+
       {showSuggestions && suggestions.length > 0 && (
         <div className="suggestions-dropdown">
           {suggestions.map((suggestion, index) => (
-            <div 
+            <div
               key={`${suggestion.type}-${suggestion.text}-${index}`}
               className={`suggestion-item ${selectedIndex === index ? 'selected' : ''}`}
               onClick={() => executeSuggestion(suggestion)}
@@ -194,7 +194,7 @@ const SearchBar: React.FC = () => {
           ))}
         </div>
       )}
-      
+
       {isLoading && (
         <div className="search-loading">
           <div className="search-spinner"></div>
