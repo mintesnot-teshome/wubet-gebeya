@@ -11,6 +11,8 @@ use App\Http\Controllers\OrderController;
 Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products'); // Added products route
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/search', [ProductController::class, 'search'])->name('product.search');
+Route::get('/search/suggestions', [ProductController::class, 'searchSuggestions'])->name('product.search.suggestions');
 
 // Cart routes - protected by auth middleware
 Route::middleware(['auth'])->group(function () {
@@ -46,12 +48,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
+});
 
-    // Admin routes
-    Route::middleware(['auth'])->prefix('admin')->group(function () {
-        Route::get('/dashboard', [ProductController::class, 'adminDashboard'])->name('admin.dashboard');
-        Route::resource('/products', ProductController::class)->except(['index', 'show']);
-    });
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [ProductController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::resource('/products', ProductController::class)->except(['index', 'show']);
 });
 
 // Public API endpoints

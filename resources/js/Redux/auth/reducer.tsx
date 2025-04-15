@@ -23,7 +23,6 @@ interface UserLogoutState {
 
 interface AuthDataState {
   isAuthenticated: boolean;
-  token: string | null;
   user: any | null;
 }
 
@@ -39,14 +38,14 @@ interface ActionType {
   payload?: any;
 }
 
-const TOKEN = localStorage.getItem("token");
+// For Laravel, we don't use tokens but check if the user object exists
+// from the Inertia props provided by Laravel
 const initialState: AuthState = {
   userLogin: { loading: false, error: false, message: "" },
   userRegister: { loading: false, error: false, message: "" },
   userLogout: { message: "" },
   data: {
-    isAuthenticated: !!TOKEN,
-    token: TOKEN,
+    isAuthenticated: false,
     user: null,
   },
 };
@@ -59,13 +58,11 @@ export default function authReducer(state = initialState, { type, payload }: Act
         userLogin: { loading: true, error: false, message: "" },
       };
     case AUTH_LOGIN_SUCCESS:
-      localStorage.setItem("token", payload.token);
       return {
         ...state,
-        userLogin: { loading: false, error: false, message: payload.message },
+        userLogin: { loading: false, error: false, message: payload.message || 'Login successful' },
         data: {
           isAuthenticated: true,
-          token: payload.token,
           user: payload.user,
         },
       };
@@ -81,13 +78,11 @@ export default function authReducer(state = initialState, { type, payload }: Act
         userLogin: { loading: false, error: false, message: "" },
       };
     case AUTH_LOGOUT:
-      localStorage.removeItem("token");
       return {
         ...state,
         userLogout: { message: "Logout Successfully" },
         data: {
           isAuthenticated: false,
-          token: null,
           user: null,
         },
       };

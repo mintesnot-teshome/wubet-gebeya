@@ -12,10 +12,11 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { authLogin } from "../../Redux/auth/actions";
 import { AUTH_LOGIN_RESET } from "../../Redux/auth/actionTypes";
 import { getCart } from "../../Redux/cart/actions";
@@ -24,27 +25,6 @@ import DefaultLayout from "../../layouts/default-layout";
 interface FormData {
   email: string;
   password: string;
-}
-
-interface AuthState {
-  userLogin: {
-    loading: boolean;
-    error: boolean;
-    message: string;
-  };
-  userRegister: {
-    loading: boolean;
-    error: boolean;
-    message: string;
-  };
-  userLogout: {
-    message: string;
-  };
-  data: {
-    isAuthenticated: boolean;
-    token: string | null;
-    user: any | null;
-  };
 }
 
 const initialState: FormData = {
@@ -56,58 +36,84 @@ function Login(): JSX.Element {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formData, setFormData] = useState<FormData>(initialState);
-  const authState = useSelector((state: any) => state.auth) as AuthState;
+  const [errors, setErrors] = useState<any>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const authState = useSelector((state: any) => state.auth);
+  const { auth } = usePage().props as any;
   const dispatch = useDispatch();
 
   useEffect(() => {
     onOpen();
-    if (authState.userLogin.message === "User does not exist") {
-      toast({
-        title: authState.userLogin.message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-    if (authState.userLogin.message === "Password is incorrect") {
-      toast({
-        title: authState.userLogin.message,
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-    if (authState.userLogin.message === "Login successful") {
+
+    // Handle login success message from authState
+    if (authState.userLogin?.message === "Login successful") {
       dispatch(getCart());
       toast({
-        title: "Login Successfully",
+        title: "Login Successful",
         status: "success",
         duration: 3000,
         isClosable: true,
         position: "top",
       });
       dispatch({ type: AUTH_LOGIN_RESET });
+
+      // Navigate home after successful login
       setTimeout(() => {
+        onClose();
         router.visit('/');
-      }, 2000);
+      }, 1500);
+    }
+
+    // Handle error messages
+    if (authState.userLogin?.error) {
+      toast({
+        title: authState.userLogin.message || "Login failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
     }
   }, [dispatch, onOpen, authState, toast]);
 
+  // If user is already authenticated, redirect to home
+  useEffect(() => {
+    if (auth?.user) {
+      router.visit('/');
+    }
+  }, [auth]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear errors when user starts typing
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: null });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    dispatch(authLogin(formData));
-  };
 
-  if(authState.data.isAuthenticated) {
-    router.visit('/');
-    return null;
-  }
+    // Basic validation
+    const newErrors: any = {};
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) newErrors.password = "Password is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      dispatch(authLogin(formData));
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <DefaultLayout>
@@ -121,7 +127,7 @@ function Login(): JSX.Element {
           <ModalHeader>Login / Start Shopping</ModalHeader>
           <Img src="https://shopyourwardrobe.com/wp-content/uploads/2013/01/cost-of-being-a-shopaholic.jpg" />
           <ModalBody pb={6}>
-            <FormControl>
+            <FormControl isInvalid={!!errors.email}>
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
@@ -129,9 +135,10 @@ function Login(): JSX.Element {
                 name="email"
                 onChange={handleChange}
               />
+              {errors.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
             </FormControl>
 
-            <FormControl mt={4}>
+            <FormControl mt={4} isInvalid={!!errors.password}>
               <FormLabel>Password</FormLabel>
               <Input
                 type="password"
@@ -139,11 +146,17 @@ function Login(): JSX.Element {
                 name="password"
                 onChange={handleChange}
               />
+              {errors.password && <FormErrorMessage>{errors.password}</FormErrorMessage>}
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={handleSubmit} colorScheme="blue" mr={3}>
+            <Button
+              onClick={handleSubmit}
+              colorScheme="blue"
+              mr={3}
+              isLoading={isSubmitting}
+            >
               Login
             </Button>
             <Button

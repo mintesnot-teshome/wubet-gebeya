@@ -17,7 +17,7 @@ class ProductController extends Controller
         $baseQuery = Product::query();
 
         // Special case for home page route ('/')
-        if ($request->path() === '/' && !$request->hasAny(['category', 'type', 'max_price', 'sort'])) {
+        if ($request->path() === '/' && !$request->hasAny(['category', 'type', 'max_price', 'sort', 'search'])) {
             // For the home page - group products for carousel displays
             $products = [
                 'featured' => (clone $baseQuery)->limit(25)->get(),
@@ -32,16 +32,27 @@ class ProductController extends Controller
             ]);
         }
 
-        // Filter by category if provided
-        if ($request->has('category')) {
-            $category = $request->category;
-            $baseQuery->where('category', 'LIKE', "%{$category}%");
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $baseQuery->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', "%{$searchTerm}%")
+                      ->orWhere('brand', 'like', "%{$searchTerm}%")
+                      ->orWhere('category', 'like', "%{$searchTerm}%")
+                      ->orWhere('type', 'like', "%{$searchTerm}%");
+            });
         }
 
-        // Filter by type if provided
+        // Filter by category if provided (case-insensitive)
+        if ($request->has('category')) {
+            $category = strtolower($request->category);
+            $baseQuery->whereRaw('LOWER(category) LIKE ?', ["%{$category}%"]);
+        }
+
+        // Filter by type if provided (case-insensitive)
         if ($request->has('type')) {
-            $type = $request->type;
-            $baseQuery->where('type', 'LIKE', "%{$type}%");
+            $type = strtolower($request->type);
+            $baseQuery->whereRaw('LOWER(type) LIKE ?', ["%{$type}%"]);
         }
 
         // Filter by price range if provided
@@ -62,6 +73,9 @@ class ProductController extends Controller
             } else if ($sortOption === 'price_high') {
                 $baseQuery->orderBy('price', 'desc');
             }
+        } else {
+            // Default sorting (newest first)
+            $baseQuery->orderBy('id', 'desc');
         }
 
         // Handle any custom sorting from frontend
@@ -80,7 +94,8 @@ class ProductController extends Controller
                 'category' => $request->category ?? null,
                 'type' => $request->type ?? null,
                 'max_price' => $request->max_price ?? null,
-                'sort' => $request->sort ?? null
+                'sort' => $request->sort ?? null,
+                'search' => $request->search ?? null
             ]
         ]);
     }
@@ -190,6 +205,88 @@ class ProductController extends Controller
 
         return Inertia::render('Admin/Dashboard/Dashboard', [
             'products' => $products
+        ]);
+    }
+
+    /**
+     * Search for products by term
+     */
+    public function search(Request $request)
+    {
+        $searchTerm = $request->query('q');
+        
+        if (empty($searchTerm)) {
+            return redirect()->route('products');
+        }
+        
+        // Redirect to products page with search parameter
+        return redirect()->route('products', ['search' => $searchTerm]);
+    }
+
+    /**
+     * Get search suggestions based on a query term
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $query = $request->input('q', '');
+        
+        if (empty($query) || strlen($query) < 2) {
+            return response()->json([
+                'suggestions' => []
+            ]);
+        }
+
+        // Get product name suggestions
+        $productSuggestions = Product::where('name', 'like', "%{$query}%")
+            ->orWhere('brand', 'like', "%{$query}%")
+            ->select('name', 'brand', 'category', 'id', 'imageUrl')
+            ->limit(6)
+            ->get()
+            ->map(function($product) {
+                return [
+                    'id' => $product->id,
+                    'text' => $product->name,
+                    'brand' => $product->brand,
+                    'category' => $product->category,
+                    'image' => $product->imageUrl,
+                    'type' => 'product'
+                ];
+            });
+
+        // Get category suggestions
+        $categorySuggestions = Product::whereRaw('LOWER(category) LIKE ?', ['%' . strtolower($query) . '%'])
+            ->select('category')
+            ->distinct()
+            ->limit(3)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'text' => $item->category,
+                    'type' => 'category'
+                ];
+            });
+
+        // Get brand suggestions
+        $brandSuggestions = Product::whereRaw('LOWER(brand) LIKE ?', ['%' . strtolower($query) . '%'])
+            ->select('brand')
+            ->distinct()
+            ->limit(3)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'text' => $item->brand,
+                    'type' => 'brand'
+                ];
+            });
+
+        // Combine all suggestions
+        $allSuggestions = $productSuggestions
+            ->merge($categorySuggestions)
+            ->merge($brandSuggestions)
+            ->take(10);
+
+        return response()->json([
+            'suggestions' => $allSuggestions
         ]);
     }
 }

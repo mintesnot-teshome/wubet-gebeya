@@ -4,13 +4,12 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import "../AllProduct.css";
 
 interface ProMenueProps {
-  setPrice: (price: number[]) => void;
-  setSort: (sort: string) => void;
-  setOrderBy: (orderBy: string) => void;
+  setPrice: (price: any) => void;
+  setSortOption: (sortOption: string) => void;
 }
 
 export default function PorMenue(props: ProMenueProps): JSX.Element {
-  const { setPrice, setSort, setOrderBy } = props;
+  const { setPrice, setSortOption } = props;
 
   return (
     <div className="Prod_menu" style={{ margin: "0.7rem" }}>
@@ -22,41 +21,29 @@ export default function PorMenue(props: ProMenueProps): JSX.Element {
           <Accordion allowToggle>
             <AccordionItem>
               <Select
-                placeholder="Price ₹"
+                placeholder="Price Range"
                 onChange={(e) => {
-                  const array = e.target.value.split(":").map(Number);
-                  for (let i = 0; i < array.length; i++) {
-                    array[i] = array[i] / 81;
-                  }
-                  console.log("array", array);
-                  setPrice(array);
+                  setPrice(e.target.value.split(':').map(Number));
                 }}
                 textAlign="center"
               >
-                <option value="0:500">Below 500</option>
-                <option value="500:1000">500 - 1000</option>
-                <option value="1000:1500">1000 - 1500</option>
-                <option value="1500:2000">1500 - 2000</option>
-                <option value="2000:2500">2000 - 2500</option>
-                <option value="2500:10000000">Above 2500</option>
+                <option value="0:10">Under $10</option>
+                <option value="0:20">Under $20</option>
+                <option value="0:50">Under $50</option>
+                <option value="0:100">Under $100</option>
+                <option value="0:200">Under $200</option>
               </Select>
             </AccordionItem>
             <AccordionItem>
               <Select
-                placeholder="Reviews"
+                placeholder="Sort By"
                 textAlign="center"
-                onChange={(e) => {
-                  if (e.target.value === "increasing") {
-                    setSort("numReviews");
-                    setOrderBy("asc");
-                  } else {
-                    setSort("numReviews");
-                    setOrderBy("desc");
-                  }
-                }}
+                onChange={(e) => setSortOption(e.target.value)}
               >
-                <option value="increasing">Low to High</option>
-                <option value="decreasing">High to Low</option>
+                <option value="newest">Newest First</option>
+                <option value="popular">Most Popular</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
               </Select>
             </AccordionItem>
           </Accordion>

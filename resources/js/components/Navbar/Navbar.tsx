@@ -1,6 +1,6 @@
 import { Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Portal, useToast } from '@chakra-ui/react';
-import { Link as InertiaLink, router } from '@inertiajs/react';
-import React, { useEffect } from 'react';
+import { Link as InertiaLink, router, usePage } from '@inertiajs/react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { BsBag, BsSearch } from 'react-icons/bs';
 import { FaBars } from 'react-icons/fa';
@@ -8,7 +8,7 @@ import { MdOutlineCancel } from 'react-icons/md';
 import { RiAdminFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCart } from '../../Redux/cart/actions';
-import { AUTH_LOGOUT } from '../../Redux/auth/actionTypes';
+import { authLogout } from '../../Redux/auth/actions';
 import Logo from './Logo.png';
 import logo2 from './logo2.png';
 import './Navbar.css';
@@ -32,13 +32,45 @@ const Navbar = (): JSX.Element => {
     const dispatch = useDispatch();
     const auth = useSelector((state: RootState) => state.auth);
     const toast = useToast();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Get Inertia auth state directly
+    const { auth: inertiaAuth } = usePage().props as any;
+    const isAuthenticated = inertiaAuth?.user || auth?.data?.isAuthenticated;
 
     useEffect(() => {
-        dispatch(getCart());
-    }, [dispatch]);
+        if (isAuthenticated) {
+            dispatch(getCart());
+        }
+    }, [dispatch, isAuthenticated]);
 
     const navigateTo = (path: string): void => {
         router.visit(path);
+    };
+
+    // Handle search
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!searchTerm.trim()) {
+            return;
+        }
+
+        // Navigate to products page with search term
+        router.get(route('products'), { search: searchTerm.trim() }, {
+            preserveState: true,
+            only: ['products', 'filters'],
+        });
+
+        // Show toast notification
+        toast({
+            title: 'Searching...',
+            description: `Showing results for "${searchTerm.trim()}"`,
+            status: 'info',
+            duration: 2000,
+            isClosable: true,
+            position: 'top',
+        });
     };
 
     return (
@@ -59,18 +91,51 @@ const Navbar = (): JSX.Element => {
                         </InertiaLink>
                     </div>
                     <div>
-                        <div className="navSearch">
+                        <form onSubmit={handleSearch} className="navSearch">
                             <BsSearch />
-                            <input type="search" placeholder="search" />
-                        </div>
+                            <input
+                                type="search"
+                                placeholder="Search products, brands..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </form>
                     </div>
                     <div className="navIcons">
                         <div>
-                            <RiAdminFill fontSize="20px" onClick={() => navigateTo(route('admin.dashboard'))} />
+                            {isAuthenticated ? (
+                                <RiAdminFill fontSize="20px" onClick={() => navigateTo(route('admin.dashboard'))} />
+                            ) : (
+                                <RiAdminFill fontSize="20px" onClick={() => {
+                                    toast({
+                                        title: 'Login Required',
+                                        description: 'Please login to access admin panel',
+                                        status: 'warning',
+                                        duration: 3000,
+                                        isClosable: true,
+                                        position: 'top',
+                                    });
+                                    router.visit(route('login'));
+                                }} />
+                            )}
                         </div>
                         |
                         <div>
-                            <BsBag fontSize="20px" onClick={() => navigateTo(route('cart'))} />
+                            {isAuthenticated ? (
+                                <BsBag fontSize="20px" onClick={() => navigateTo(route('cart'))} />
+                            ) : (
+                                <BsBag fontSize="20px" onClick={() => {
+                                    toast({
+                                        title: 'Login Required',
+                                        description: 'Please login to view your cart',
+                                        status: 'warning',
+                                        duration: 3000,
+                                        isClosable: true,
+                                        position: 'top',
+                                    });
+                                    router.visit(route('login'));
+                                }} />
+                            )}
                         </div>
                         |
                         <div>
@@ -78,13 +143,13 @@ const Navbar = (): JSX.Element => {
                                 <InertiaLink href={route('register')}>
                                     <AiOutlineUser fontSize="20px" />
                                 </InertiaLink>
-                                {auth.data.isAuthenticated ? (
+                                {isAuthenticated ? (
                                     <Button
                                         h="30px"
                                         w="60px"
                                         className="navLogout"
                                         onClick={() => {
-                                            dispatch({ type: AUTH_LOGOUT });
+                                            dispatch(authLogout());
                                             toast({
                                                 title: 'Logged out successfully',
                                                 status: 'success',
@@ -92,7 +157,6 @@ const Navbar = (): JSX.Element => {
                                                 isClosable: true,
                                                 position: 'top',
                                             });
-                                            router.post(route('logout'));
                                         }}
                                     >
                                         Logout
@@ -407,25 +471,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Eye Care</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Eye Creams</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'eye' })}>Eye Creams</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Eye Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'eye-mask' })}>Eye Masks</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Sunscreen</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'sunscreen' })}>Sunscreen</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Lip Balms</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'lip' })}>Lip Balms</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Wellness</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'wellness' })}>Wellness</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">High Tech Tools</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'tech' })}>High Tech Tools</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Body Sunscreen</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'body-sun' })}>Body Sunscreen</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -433,25 +497,25 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Shop by Concern</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Acne & Blemishes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'acne' })}>Acne & Blemishes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Anti-Aging</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'anti-aging' })}>Anti-Aging</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Dark Spots</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'dark-spots' })}>Dark Spots</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Pores</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'pores' })}>Pores</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Dryness</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'dry' })}>Dryness</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Fine Lines & Wrinkles</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'wrinkles' })}>Fine Lines & Wrinkles</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Dullness</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'skincare', type: 'dull' })}>Dullness</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -474,16 +538,16 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">All Hair</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Shampoo </InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'shampoo' })}>Shampoo</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Conditioner</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'conditioner' })}>Conditioner</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Scalp Scrub</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'scalp' })}>Scalp Scrub</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Hair oil</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'oil' })}>Hair oil</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -491,42 +555,42 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">Treatments</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Hair Masks</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'mask' })}>Hair Masks</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Leave-in Conditioners</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'leave-in' })}>Leave-in Conditioners</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Hair Oil</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'oil' })}>Hair Oil</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Hair Serums</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'serum' })}>Hair Serums</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Scalp Treatments</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'scalp' })}>Scalp Treatments</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Hair Supplements</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'supplement' })}>Hair Supplements</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Thinning & Hair Loss</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'thinning' })}>Thinning & Hair Loss</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="rowBox">
-                                        <header className="navHeader">All Hair</header>
+                                        <header className="navHeader">Popular Categories</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Shampoo </InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', sort: 'newest' })}>New Arrivals</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Conditioner</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', sort: 'popular' })}>Bestsellers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Scalp Scrub</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'clean' })}>Clean Hair</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Hair oil</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'hair', type: 'luxury' })}>Luxury Hair</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -555,45 +619,45 @@ const Navbar = (): JSX.Element => {
                                         <header className="navHeader">All Fragrances</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Just Dropped</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', sort: 'newest' })}>Just Dropped</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'perfume' })}>Perfume</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Skincare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'cologne' })}>Cologne</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Haircare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'mist' })}>Body Mists</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Fragrance</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'set' })}>Fragrance Sets</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Bath & Body New</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'travel' })}>Travel Size</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Tools & Brushes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'candle' })}>Candles & Home</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="rowBox">
-                                        <header className="navHeader">Fragrance</header>
+                                        <header className="navHeader">Shop By</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">The Next Big Thing</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', sort: 'popular' })}>Bestsellers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Bestsellers</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'clean' })}>Clean Fragrance</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Quizzes & Buying Guides</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'vegan' })}>Vegan</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean Beauty Guide</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'mini' })}>Mini Size</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean+ Planet</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'fragrance', type: 'luxury' })}>Luxury</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -613,48 +677,48 @@ const Navbar = (): JSX.Element => {
                             <div className="megaBox">
                                 <div className="contentBox">
                                     <div className="rowBox">
-                                        <header className="navHeader">All New</header>
+                                        <header className="navHeader">Tools & Brushes</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Just Dropped</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', sort: 'newest' })}>Just Dropped</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'brush' })}>Makeup Brushes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Skincare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'applicator' })}>Makeup Applicators</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Haircare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'hair' })}>Hair Tools</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Fragrance</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'skincare' })}>Skincare Tools</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Bath & Body New</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'tech' })}>Beauty Tech</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Tools & Brushes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'accessories' })}>Accessories</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="rowBox">
-                                        <header className="navHeader">All Products</header>
+                                        <header className="navHeader">Popular Categories</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">The Next Big Thing</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', sort: 'popular' })}>Bestsellers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Bestsellers</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'face' })}>Face Tools</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Quizzes & Buying Guides</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'eye' })}>Eye Brushes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean Beauty Guide</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'blush' })}>Blush Brushes</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean+ Planet</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'tools', type: 'sets' })}>Brush Sets</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
@@ -680,48 +744,48 @@ const Navbar = (): JSX.Element => {
                             <div className="megaBox">
                                 <div className="contentBox">
                                     <div className="rowBox">
-                                        <header className="navHeader">All New</header>
+                                        <header className="navHeader">Bath & Body</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">Just Dropped</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', sort: 'newest' })}>Just Dropped</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Makeup</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'lotion' })}>Body Lotions</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Skincare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'wash' })}>Body Wash</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Haircare</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'scrub' })}>Body Scrubs</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Fragrance</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'oil' })}>Body Oils</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">New Bath & Body New</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'butter' })}>Body Butter</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Tools & Brushes</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'mist' })}>Body Mists</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="rowBox">
-                                        <header className="navHeader">All Products</header>
+                                        <header className="navHeader">Popular Categories</header>
                                         <ul className="linkBox">
                                             <li>
-                                                <InertiaLink href="">The Next Big Thing</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', sort: 'popular' })}>Bestsellers</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Bestsellers</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'clean' })}>Clean Bath & Body</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Quizzes & Buying Guides</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'sets' })}>Bath & Body Sets</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean Beauty Guide</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'travel' })}>Travel Size</InertiaLink>
                                             </li>
                                             <li>
-                                                <InertiaLink href="">Clean+ Planet</InertiaLink>
+                                                <InertiaLink href={route('products', { category: 'bath', type: 'hand' })}>Hand Sanitizers</InertiaLink>
                                             </li>
                                         </ul>
                                     </div>

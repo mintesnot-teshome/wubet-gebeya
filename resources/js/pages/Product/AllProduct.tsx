@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./AllProduct.css";
 import { StarIcon } from "@chakra-ui/icons";
-import { Link as InertiaLink, usePage } from '@inertiajs/react';
+import { Link as InertiaLink, router } from '@inertiajs/react';
 import {
   Accordion,
   Show,
@@ -15,55 +15,65 @@ import {
   Button,
   Select,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
 import PorMenue from "./Pro_component/pro_menue";
-import { getAllProducts } from "../../Redux/products/actions";
 import DefaultLayout from '@/layouts/default-layout';
 
-export default function AllProduct() {
-  const { query } = usePage().props;
-  const categoryQuery = query?.category || "";
+export default function AllProduct({ products, filters }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [price, setPrice] = useState(filters?.max_price || null);
+  const [sortOption, setSortOption] = useState(filters?.sort || "newest");
 
-  let [page, setPage] = useState(1);
-  const [price, setPrice] = useState([]);
-  const [sort, setSort] = useState("numReviews");
-  const [orderBy, setOrderBy] = useState("");
-  const { data } = useSelector((store) => store.products);
+  // Function to handle filtering
+  const applyFilters = (newFilters) => {
+    setIsLoading(true);
 
-  let length;
-  if (categoryQuery === "") {
-    length = 216;
-  } else if (categoryQuery === "makeup") {
-    length = 40;
-  } else if (categoryQuery === "skincare") {
-    length = 58;
-  } else if (categoryQuery === "hair") {
-    length = 38;
-  } else if (categoryQuery === "fragrance") {
-    length = 37;
-  } else if (categoryQuery === "tools") {
-    length = 30;
-  } else if (categoryQuery === "bath") {
-    length = 39;
-  }
+    // Prepare filter parameters
+    const params = {
+      ...filters,
+      ...newFilters,
+      page: currentPage,
+    };
 
-  const [prevQuery, setPrevQuery] = useState(categoryQuery);
-  const {
-    AllProducts: { loading },
-  } = useSelector((store) => store.products);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (prevQuery !== categoryQuery) {
-      setPage(1);
-    }
-    dispatch(
-      getAllProducts({ category: categoryQuery, page: page, price, sort, orderBy })
+    // Clean up undefined values
+    Object.keys(params).forEach(key =>
+      params[key] === undefined && delete params[key]
     );
-    setPrevQuery(categoryQuery);
-  }, [dispatch, categoryQuery, page, prevQuery, price, sort, orderBy]);
 
-  if (loading) {
+    // Navigate with filters
+    router.get(route('products'), params, {
+      preserveState: true,
+      onSuccess: () => {
+        setIsLoading(false);
+      }
+    });
+  };
+
+  // Handle page changes
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    applyFilters({ page: newPage });
+  };
+
+  // Handle price filtering
+  const handlePriceFilter = (priceRange) => {
+    const [min, max] = priceRange.split(':').map(Number);
+    setPrice(max);
+    applyFilters({ max_price: max, page: 1 });
+  };
+
+  // Handle sort changes
+  const handleSortChange = (sortType) => {
+    setSortOption(sortType);
+    applyFilters({ sort: sortType, page: 1 });
+  };
+
+  // Get category name for display
+  const categoryName = filters?.category ?
+    filters.category.charAt(0).toUpperCase() + filters.category.slice(1) :
+    'All Products';
+
+  if (isLoading) {
     return (
       <DefaultLayout title="Products">
         <Grid
@@ -100,7 +110,7 @@ export default function AllProduct() {
   }
 
   return (
-    <DefaultLayout title={`Products - ${categoryQuery || 'All'}`}>
+    <DefaultLayout title={`Products - ${categoryName}`}>
       <div className="product_body">
         <Hide below="1000px">
           <div className="product_el_one ">
@@ -109,40 +119,29 @@ export default function AllProduct() {
             <Accordion allowToggle>
               <AccordionItem>
                 <Select
-                  placeholder="Price ₹"
-                  onChange={({ target }) => {
-                    let array = target.value.split(":").map(Number);
-                    for (let i = 0; i < array.length; i++) {
-                      array[i] = array[i] / 81;
-                    }
-                    setPrice(array);
-                  }}
+                  placeholder="Price Range"
+                  onChange={(e) => handlePriceFilter(e.target.value)}
                   textAlign="center"
+                  value={price ? `0:${price}` : ""}
                 >
-                  <option value="0:500">Below 500</option>
-                  <option value="500:1000">500 - 1000</option>
-                  <option value="1000:1500">1000 - 1500</option>
-                  <option value="1500:2000">1500 - 2000</option>
-                  <option value="2000:2500">2000 - 2500</option>
-                  <option value="2500:10000000">Above 2500</option>
+                  <option value="0:10">Under $10</option>
+                  <option value="0:20">Under $20</option>
+                  <option value="0:50">Under $50</option>
+                  <option value="0:100">Under $100</option>
+                  <option value="0:200">Under $200</option>
                 </Select>
               </AccordionItem>
               <AccordionItem>
                 <Select
-                  placeholder="Reviews"
+                  placeholder="Sort By"
                   textAlign="center"
-                  onChange={({ target }) => {
-                    if (target.value === "increasing") {
-                      setSort("numReviews");
-                      setOrderBy("asc");
-                    } else {
-                      setSort("numReviews");
-                      setOrderBy("desc");
-                    }
-                  }}
+                  value={sortOption || ""}
+                  onChange={(e) => handleSortChange(e.target.value)}
                 >
-                  <option value="increasing">Low to High</option>
-                  <option value="decreasing">High to Low</option>
+                  <option value="newest">Newest First</option>
+                  <option value="popular">Most Popular</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
                 </Select>
               </AccordionItem>
             </Accordion>
@@ -159,14 +158,17 @@ export default function AllProduct() {
           <Img src="https://pubsaf.global.ssl.fastly.net/prmt/b37a3d4788a3a4c3f8a92f194d801148" />
           <Show below="1000px">
             <PorMenue
-              setPrice={setPrice}
-              setOrderBy={setOrderBy}
-              setSort={setSort}
+              setPrice={(priceRange) => {
+                if (Array.isArray(priceRange) && priceRange.length > 0) {
+                  handlePriceFilter(`0:${priceRange[1] || priceRange[0]}`);
+                }
+              }}
+              setSortOption={handleSortChange}
             />
           </Show>
           <div className="product_el_two">
-            {data &&
-              data.map((el, i) => (
+            {products.data && products.data.length > 0 ? (
+              products.data.map((el, i) => (
                 <Box
                   maxW="sm"
                   borderWidth="1px"
@@ -185,7 +187,7 @@ export default function AllProduct() {
                   </div>
 
                   <Box p="6">
-                    <InertiaLink href={route('product.show', {id: el.id || el._id})}>
+                    <InertiaLink href={route('product.show', {id: el.id})}>
                       <Box
                         mt="1"
                         fontWeight="semibold"
@@ -209,26 +211,36 @@ export default function AllProduct() {
                         {el.numReviews} reviews
                       </Box>
                       <Box>
-                        ₹ {el.price * 81}
+                        ${el.price}
                         <Box as="span" color="gray.600" fontSize="sm"></Box>
                       </Box>
                     </InertiaLink>
                   </Box>
                 </Box>
-              ))}
+              ))
+            ) : (
+              <Box textAlign="center" p="10">
+                <p>No products found matching your criteria.</p>
+              </Box>
+            )}
           </div>
-          <div className="pagination">
-            <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-              Prev
-            </Button>
-            <Button>{page}</Button>
-            <Button
-              disabled={page === Math.ceil(length / 20)}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </Button>
-          </div>
+          {products.data && products.data.length > 0 && (
+            <div className="pagination">
+              <Button
+                disabled={!products.prev_page_url}
+                onClick={() => handlePageChange(products.current_page - 1)}
+              >
+                Prev
+              </Button>
+              <Button>{products.current_page}</Button>
+              <Button
+                disabled={!products.next_page_url}
+                onClick={() => handlePageChange(products.current_page + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </DefaultLayout>
