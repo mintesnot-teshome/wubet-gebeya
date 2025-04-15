@@ -20,6 +20,9 @@ class Product extends Model
         'category',
         'imageUrl',
         'price',
+        'original_price',
+        'discount_percentage',
+        'is_deal',
         'stars',
         'type',
         'numReviews',
@@ -32,6 +35,9 @@ class Product extends Model
      */
     protected $casts = [
         'price' => 'float',
+        'original_price' => 'float',
+        'discount_percentage' => 'integer',
+        'is_deal' => 'boolean',
         'stars' => 'float',
         'numReviews' => 'integer',
     ];

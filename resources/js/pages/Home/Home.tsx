@@ -81,6 +81,8 @@ interface Product {
     imageUrl: string;
     category: string;
     price: number;
+    originalPrice?: number; // Optional field for original price
+    discountPercentage?: number; // Optional field for discount percentage
     stars: number;
     type: string;
     numReviews: number;
@@ -95,9 +97,14 @@ const Home: React.FC<HomeProps> = ({ products }) => {
 
     const chosenForYou = groupedProducts['featured'] || [];
     const justDropped = groupedProducts['new'] || [];
-    const sellingFast = groupedProducts['popular'] || []; // Updated from 'bestseller' to 'popular'
+    const sellingFast = groupedProducts['popular'] || [];
     const featuredCategories = groupedProducts['category'] || [];
     const guidanceProducts = groupedProducts['guide'] || [];
+    const superDeals = groupedProducts['deals'] ||
+        Object.values(groupedProducts)
+            .flat()
+            .filter(product => product.originalPrice && product.discountPercentage)
+            .slice(0, 8);
 
     return (
         <DefaultLayout title="Home - Wubet Gebeya">
@@ -162,6 +169,38 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                 </Carousel>
 
                 <div className="homePro">
+                    <h1 className="homeHead">Super Deals</h1>
+                    <p className="homeP">Shop our highest discounted items.</p>
+                    <div className="hc1">
+                        <Carousel
+                            responsive={responsivefeatures}
+                            customTransition="1s"
+                            transitionDuration={1000}
+                        >
+                            {superDeals.map((product) => (
+                                <InertiaLink href={route('product.show', product.id)} key={product.id}>
+                                    <div className="homeFeatures">
+                                        <div>
+                                            <p>{product.name}</p>
+                                            {product.discountPercentage && (
+                                                <p className="discount">{product.discountPercentage}% OFF</p>
+                                            )}
+                                            <div className="price-container">
+                                                <span className="current-price">₹{product.price}</span>
+                                                {product.originalPrice && (
+                                                    <span className="original-price">₹{product.originalPrice}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img src={product.imageUrl} alt="proImg" />
+                                        </div>
+                                    </div>
+                                </InertiaLink>
+                            ))}
+                        </Carousel>
+                    </div>
+
                     <h1 className="homeHead">Chosen For You</h1>
                     <div className="hc1">
                         <Carousel
@@ -179,6 +218,15 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                         <div>
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
+                                            <div className="price-container">
+                                                <span className="current-price">₹{product.price}</span>
+                                                {product.originalPrice && product.discountPercentage && (
+                                                    <>
+                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="discount">{product.discountPercentage}% OFF</span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </InertiaLink>
@@ -203,6 +251,15 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                         <div>
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
+                                            <div className="price-container">
+                                                <span className="current-price">₹{product.price}</span>
+                                                {product.originalPrice && product.discountPercentage && (
+                                                    <>
+                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="discount">{product.discountPercentage}% OFF</span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </InertiaLink>
@@ -227,6 +284,15 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                         <div>
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
+                                            <div className="price-container">
+                                                <span className="current-price">₹{product.price}</span>
+                                                {product.originalPrice && product.discountPercentage && (
+                                                    <>
+                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="discount">{product.discountPercentage}% OFF</span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </InertiaLink>
@@ -243,35 +309,16 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                             transitionDuration={1000}
                         >
                             {featuredCategories.map((product) => (
-                                <div key={product.id} className="homeFeatures">
-                                    <div>
-                                        <p>{product.name}</p>
+                                <InertiaLink href={route('products', { category: product.category })} key={product.id}>
+                                    <div className="homeFeatures">
+                                        <div>
+                                            <p>{product.name}</p>
+                                        </div>
+                                        <div>
+                                            <img src={product.imageUrl} alt="proImg" />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <img src={product.imageUrl} alt="proImg" />
-                                    </div>
-                                </div>
-                            ))}
-                        </Carousel>
-                    </div>
-
-                    <h1 className="homeHead">Need a Little Guidance?</h1>
-                    <p className="homeP">Check out our quizzes and buying guides.</p>
-                    <div className="hc1">
-                        <Carousel
-                            responsive={responsivefeatures}
-                            customTransition="1s"
-                            transitionDuration={1000}
-                        >
-                            {guidanceProducts.map((product) => (
-                                <div key={product.id} className="homeFeatures">
-                                    <div>
-                                        <p>{product.name}</p>
-                                    </div>
-                                    <div>
-                                        <img src={product.imageUrl} alt="proImg" />
-                                    </div>
-                                </div>
+                                </InertiaLink>
                             ))}
                         </Carousel>
                     </div>

@@ -25,6 +25,7 @@ class ProductController extends Controller
                 'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(25)->get(),
                 'category' => (clone $baseQuery)->where('category', 'makeup')->limit(8)->get(),
                 'guide' => (clone $baseQuery)->where('category', 'skincare')->limit(8)->get(),
+                'superDeals' => (clone $baseQuery)->where('is_deal', true)->orWhereNotNull('discount_percentage')->limit(25)->get(),
             ];
 
             return Inertia::render('Home/Home', [

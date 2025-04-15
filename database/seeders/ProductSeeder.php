@@ -40,13 +40,30 @@ class ProductSeeder extends Seeder
                         continue;
                     }
 
+                    // Calculate discount information for some products
+                    $isDiscount = rand(0, 100) < 30; // 30% chance of being a discounted product
+                    $originalPrice = null;
+                    $discountPercentage = null;
+                    $price = $product['price'] ?? 0;
+                    $isDeal = false;
+
+                    if ($isDiscount) {
+                        $discountPercentage = rand(10, 50); // Random discount between 10% and 50%
+                        $originalPrice = $price;
+                        $price = round($originalPrice * (100 - $discountPercentage) / 100, 2);
+                        $isDeal = $discountPercentage >= 20; // Products with 20% or more discount are marked as deals
+                    }
+
                     // Map fields and ensure db compatibility
                     Product::create([
                         'name' => $product['name'] ?? 'Unknown Product',
                         'brand' => $product['brand'] ?? 'Unknown Brand',
                         'category' => $product['category'] ?? 'other',
                         'imageUrl' => $product['imageUrl'] ?? 'https://via.placeholder.com/400',
-                        'price' => $product['price'] ?? 0,
+                        'price' => $price,
+                        'original_price' => $originalPrice,
+                        'discount_percentage' => $discountPercentage,
+                        'is_deal' => $isDeal,
                         'stars' => $product['stars'] ?? 0,
                         'type' => $product['type'] ?? 'Unknown Type',
                         'numReviews' => $product['numReviews'] ?? 0,
@@ -72,7 +89,24 @@ class ProductSeeder extends Seeder
     private function seedFromFactory(): void
     {
         $this->command->info('No valid db.json found. Creating products using factory...');
-        Product::factory(100)->create();
-        $this->command->info('Created 100 sample products using factory!');
+
+        // Create regular products
+        Product::factory(70)->create();
+
+        // Create discounted products
+        Product::factory(30)->create()->each(function ($product) {
+            $discountPercentage = rand(10, 50);
+            $originalPrice = $product->price;
+            $discountedPrice = round($originalPrice * (100 - $discountPercentage) / 100, 2);
+
+            $product->update([
+                'original_price' => $originalPrice,
+                'price' => $discountedPrice,
+                'discount_percentage' => $discountPercentage,
+                'is_deal' => ($discountPercentage >= 20) // Products with 20% or more discount are deals
+            ]);
+        });
+
+        $this->command->info('Created 100 sample products using factory (including 30 with discounts)!');
     }
 }
