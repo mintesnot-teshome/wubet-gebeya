@@ -114,7 +114,7 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                 alt="sliderImg"
                             />
                             <div className="HomeSlider1">
-                                <h1>Fragrance Gifts $75 & Under</h1>
+                                <h1>Fragrance Gifts 1000 Birr & Under</h1>
                                 <p>Sets for everyone on your list (including you!)</p>
                                 <span>SHOP NOW▸</span>
                             </div>

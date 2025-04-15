@@ -742,7 +742,7 @@ const Navbar = (): JSX.Element => {
                         </li>
                         <li>
                             <InertiaLink href={route('products', { max_price: 20 })} className="desktopItem">
-                                Beauty Under $20
+                                Beauty Under 200 Birr
                             </InertiaLink>
                             <div className="megaBox">
                                 <div className="contentBox">

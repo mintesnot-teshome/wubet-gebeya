@@ -18,6 +18,7 @@ import {
     Button,
 } from '@chakra-ui/react';
 import { Link, router, usePage } from '@inertiajs/react';
+import { Link as InertiaLink } from '@inertiajs/react';
 import { useState } from 'react';
 import { AiOutlineStar } from 'react-icons/ai';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
@@ -281,7 +282,7 @@ function SingleProduct() {
                         <Carousel responsive={responsive1} customTransition="1s" transitionDuration={1000}>
                             {similarProducts.map((product) => (
                                 <div key={product.id} className="proCon">
-                                    <Link href={route('product.show', {id: product.id})}>
+                                    <InertiaLink href={route('product.show', {id: product.id})}>
                                         <div>
                                             <img src={product.imageUrl} alt="proImg" />
                                             <span className="homeLook">Quicklook</span>
@@ -290,7 +291,7 @@ function SingleProduct() {
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
                                         </div>
-                                    </Link>
+                                    </InertiaLink>
                                 </div>
                             ))}
                         </Carousel>

@@ -20,9 +20,9 @@ class ProductController extends Controller
         if ($request->path() === '/' && !$request->hasAny(['category', 'type', 'max_price', 'sort'])) {
             // For the home page - group products for carousel displays
             $products = [
-                'featured' => (clone $baseQuery)->limit(10)->get(),
-                'new' => (clone $baseQuery)->orderBy('id', 'desc')->limit(10)->get(),
-                'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(10)->get(),
+                'featured' => (clone $baseQuery)->limit(25)->get(),
+                'new' => (clone $baseQuery)->orderBy('id', 'desc')->limit(25)->get(),
+                'popular' => (clone $baseQuery)->orderBy('stars', 'desc')->limit(25)->get(),
                 'category' => (clone $baseQuery)->where('category', 'makeup')->limit(8)->get(),
                 'guide' => (clone $baseQuery)->where('category', 'skincare')->limit(8)->get(),
             ];
@@ -90,7 +90,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/AddProduct', [
+        return Inertia::render('Admin/AddProduct/AddProduct', [
             'categories' => ['Makeup', 'Hair', 'Skincare', 'Fragrance', 'Bath & Body', 'Tools & Brushes']
         ]);
     }
@@ -125,7 +125,7 @@ class ProductController extends Controller
         // Get similar products from the same category
         $similarProducts = Product::where('category', $product->category)
             ->where('id', '!=', $product->id)
-            ->limit(4)
+            ->limit(24)
             ->get();
 
         return Inertia::render('Product/SingleProduct', [
