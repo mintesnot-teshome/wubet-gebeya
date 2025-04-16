@@ -1,17 +1,55 @@
 span {
-  display: inline;
-  font-weight: bold;
+    display: inline;
+    font-weight: bold;
 }
 
 #explore-more-div {
-  max-height: 0px;
-  overflow: hidden;
+    max-height: 0px;
+    overflow: hidden;
 }
 
 #explore-more-label:checked #explore-more-div {
-  max-height: 200px;
-  overflow: visible;
-  visibility: visible;
+    max-height: 200px;
+    overflow: visible;
+    visibility: visible;
+}
+
+/* Enhanced price styling for cart */
+.cart-price {
+    font-weight: 700;
+    font-size: 18px;
+    color: #cd2f47;
+    position: relative;
+    display: inline-block;
+}
+
+.cart-price-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.cart-total-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #cd2f47;
+    position: relative;
+}
+
+.cart-total-price::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #cd2f47;
+    opacity: 0.3;
+}
+
+.cart-savings {
+    color: #28a745;
+    font-weight: 500;
+    font-size: 14px;
 }
 
 /* .display1 {

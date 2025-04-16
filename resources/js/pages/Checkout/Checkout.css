@@ -1,0 +1,58 @@
+/* Enhanced price styling for checkout */
+.checkout-price-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #cd2f47;
+}
+
+.checkout-price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.checkout-price-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+}
+
+.checkout-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.checkout-total-row {
+    border-top: 1px dashed #ddd;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.checkout-total-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.checkout-total-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #cd2f47;
+    position: relative;
+    display: inline-block;
+}
+
+.checkout-total-price::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #cd2f47;
+    opacity: 0.3;
+}

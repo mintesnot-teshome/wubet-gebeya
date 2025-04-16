@@ -34,26 +34,26 @@ const Right = ({ cartSummary }: RightProps): JSX.Element => {
       mb="10px"
     >
       <Flex w="100%" justify={"space-between"}>
-        <Text>Merchandise Subtotal</Text>
-        <Text fontWeight={"bold"}>$ {formattedSubtotal}</Text>
+        <Text className="cart-price-label">Merchandise Subtotal</Text>
+        <Text className="cart-price">ETB {formattedSubtotal}</Text>
       </Flex>
       <Flex w="100%" justify={"space-between"}>
-        <Text>Shipping & Handling</Text>
-        <Text fontWeight={"bold"}>$ {shippingCost.toFixed(2)}</Text>
+        <Text className="cart-price-label">Shipping & Handling</Text>
+        <Text className="cart-price">ETB {shippingCost.toFixed(2)}</Text>
       </Flex>
       <Flex w="100%" justify={"space-between"}>
-        <Text>Tax</Text>
-        <Text fontWeight={"bold"}>$ {formattedTax}</Text>
+        <Text className="cart-price-label">Tax</Text>
+        <Text className="cart-price">ETB {formattedTax}</Text>
       </Flex>
       <Divider />
       <Flex w="100%" justify={"space-between"}>
-        <Text>Estimated Total</Text>
-        <Text fontWeight={"bold"}>$ {formattedTotal}</Text>
+        <Text fontWeight={"bold"}>Estimated Total</Text>
+        <Text className="cart-total-price">ETB {formattedTotal}</Text>
       </Flex>
-      <Box w="100%" fontSize="13px">
+      <Box w="100%" fontSize="13px" className="cart-savings">
         <Text>
-          or 4 payments of $ {installmentAmount} with <strong>SBI</strong> or{" "}
-          <strong>afterpay</strong>
+          or 4 payments of ETB {installmentAmount} with <strong>CBE</strong> or{" "}
+          <strong>Telebirr</strong>
         </Text>
       </Box>
       <Text fontSize={"12px"} color="grey">

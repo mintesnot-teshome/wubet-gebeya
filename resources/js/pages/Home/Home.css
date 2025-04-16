@@ -183,6 +183,60 @@
     font-size: 0.9em;
 }
 
+/* Enhanced price styling */
+.current-price {
+    font-weight: 700;
+    font-size: 18px;
+    color: #cd2f47;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #777;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.price-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    position: relative;
+}
+
+.discount {
+    background-color: #28a745;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+/* Sale price animation */
+@keyframes priceHighlight {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.price-container:hover .current-price {
+    animation: priceHighlight 1s ease infinite;
+}
+
 @media screen and (max-width: 700px) {
     .HomeSlider1,
     .HomeSlider2,

@@ -223,19 +223,19 @@ export default function Checkout() {
               </FormControl>
 
               {cartSummary && (
-                <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
-                  <Flex justify="space-between" mb={2}>
-                    <Text>Subtotal:</Text>
-                    <Text>${cartSummary.subtotal.toFixed(2)}</Text>
-                  </Flex>
-                  <Flex justify="space-between" mb={2}>
-                    <Text>Tax:</Text>
-                    <Text>${cartSummary.tax.toFixed(2)}</Text>
-                  </Flex>
-                  <Flex justify="space-between" fontWeight="bold">
-                    <Text>Total:</Text>
-                    <Text>${cartSummary.total.toFixed(2)}</Text>
-                  </Flex>
+                <Box mt={4} className="checkout-price-container">
+                  <div className="checkout-price-row">
+                    <Text className="checkout-price-label">Subtotal:</Text>
+                    <Text className="checkout-price">ETB {cartSummary.subtotal.toFixed(2)}</Text>
+                  </div>
+                  <div className="checkout-price-row">
+                    <Text className="checkout-price-label">Tax:</Text>
+                    <Text className="checkout-price">ETB {cartSummary.tax.toFixed(2)}</Text>
+                  </div>
+                  <div className="checkout-price-row checkout-total-row">
+                    <Text className="checkout-total-label">Total:</Text>
+                    <Text className="checkout-total-price">ETB {cartSummary.total.toFixed(2)}</Text>
+                  </div>
                 </Box>
               )}
 

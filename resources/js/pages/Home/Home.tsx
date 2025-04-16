@@ -160,7 +160,7 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                 alt="sliderImg"
                             />
                             <div className="HomeSlider4">
-                                <h1>Fragrance Gifts $75 & Under</h1>
+                                <h1>Fragrance Gifts ETB 1000 & Under</h1>
                                 <p>Sets for everyone on your list (including you!)</p>
                                 <span>SHOP NOW▸</span>
                             </div>
@@ -186,9 +186,9 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                                 <p className="discount">{product.discountPercentage}% OFF</p>
                                             )}
                                             <div className="price-container">
-                                                <span className="current-price">₹{product.price}</span>
+                                                <span className="current-price">ETB {product.price}</span>
                                                 {product.originalPrice && (
-                                                    <span className="original-price">₹{product.originalPrice}</span>
+                                                    <span className="original-price">ETB {product.originalPrice}</span>
                                                 )}
                                             </div>
                                         </div>
@@ -219,10 +219,10 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
                                             <div className="price-container">
-                                                <span className="current-price">₹{product.price}</span>
+                                                <span className="current-price">ETB {product.price}</span>
                                                 {product.originalPrice && product.discountPercentage && (
                                                     <>
-                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="original-price">ETB {product.originalPrice}</span>
                                                         <span className="discount">{product.discountPercentage}% OFF</span>
                                                     </>
                                                 )}
@@ -252,10 +252,10 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
                                             <div className="price-container">
-                                                <span className="current-price">₹{product.price}</span>
+                                                <span className="current-price">ETB {product.price}</span>
                                                 {product.originalPrice && product.discountPercentage && (
                                                     <>
-                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="original-price">ETB {product.originalPrice}</span>
                                                         <span className="discount">{product.discountPercentage}% OFF</span>
                                                     </>
                                                 )}
@@ -285,10 +285,10 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                                             <h1>{product.brand}</h1>
                                             <p>{product.name}</p>
                                             <div className="price-container">
-                                                <span className="current-price">₹{product.price}</span>
+                                                <span className="current-price">ETB {product.price}</span>
                                                 {product.originalPrice && product.discountPercentage && (
                                                     <>
-                                                        <span className="original-price">₹{product.originalPrice}</span>
+                                                        <span className="original-price">ETB {product.originalPrice}</span>
                                                         <span className="discount">{product.discountPercentage}% OFF</span>
                                                     </>
                                                 )}

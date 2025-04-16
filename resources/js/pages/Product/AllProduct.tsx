@@ -124,11 +124,11 @@ export default function AllProduct({ products, filters }) {
                   textAlign="center"
                   value={price ? `0:${price}` : ""}
                 >
-                  <option value="0:10">Under $10</option>
-                  <option value="0:20">Under $20</option>
-                  <option value="0:50">Under $50</option>
-                  <option value="0:100">Under $100</option>
-                  <option value="0:200">Under $200</option>
+                  <option value="0:10">Under ETB 10</option>
+                  <option value="0:20">Under ETB 20</option>
+                  <option value="0:50">Under ETB 50</option>
+                  <option value="0:100">Under ETB 100</option>
+                  <option value="0:200">Under ETB 200</option>
                 </Select>
               </AccordionItem>
               <AccordionItem>
@@ -210,9 +210,27 @@ export default function AllProduct({ products, filters }) {
                       <Box mt="2" color="gray.600" fontSize="sm">
                         {el.numReviews} reviews
                       </Box>
-                      <Box>
-                        ${el.price}
-                        <Box as="span" color="gray.600" fontSize="sm"></Box>
+                      {/* Professional discount price display */}
+                      <Box className="aliexpress-card-price-container">
+                        {el.original_price && el.discount_percentage ? (
+                          <>
+                            <div className="aliexpress-card-discount-badge">
+                              {el.discount_percentage}% OFF
+                            </div>
+                            <div className="aliexpress-card-current-price">
+                              <small>ETB</small> {el.price.toFixed(2)}
+                            </div>
+                            <div>
+                              <span className="aliexpress-card-original-price">
+                                ETB {el.original_price.toFixed(2)}
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="aliexpress-card-current-price">
+                            <small>ETB</small> {el.price.toFixed(2)}
+                          </div>
+                        )}
                       </Box>
                     </InertiaLink>
                   </Box>

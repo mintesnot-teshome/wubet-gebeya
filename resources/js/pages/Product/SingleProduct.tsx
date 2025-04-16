@@ -62,6 +62,9 @@ interface Product {
     stars: number;
     numReviews: number;
     type: string;
+    original_price?: number;
+    discount_percentage?: number;
+    is_deal?: boolean;
 }
 
 interface PageProps {
@@ -137,7 +140,7 @@ function SingleProduct() {
 
             // Refresh the cart count in the UI
             await refreshCartCount();
-            
+
         } catch (error) {
             // Handle error
             toast({
@@ -208,12 +211,40 @@ function SingleProduct() {
                         </div>
                         <span className="proreviews">( {product.numReviews || 0} Customer reviews )</span>
                         <div className="proPrices">
-                            <p>
-                                Original Price : <span className="proOld">$ {((product.price || 0) + (product.price || 0) / 10).toFixed(2)}</span>
-                            </p>
-                            <p>
-                                Sale Price : <span>$ {product.price.toFixed(2)} (10% off)</span>
-                            </p>
+                            {/* AliExpress style price display */}
+                            {product.original_price && product.discount_percentage ? (
+                                <div className="aliexpress-price-container">
+                                    <div className="aliexpress-discount-badge">
+                                        {product.discount_percentage}% OFF
+                                    </div>
+                                    <div className="aliexpress-original-price">
+                                        Original Price: ETB {product.original_price.toFixed(2)}
+                                    </div>
+                                    <div className="aliexpress-current-price">
+                                        <small>ETB</small> 
+                                        <span style={{ backgroundColor: "#fff0f0", padding: "2px 8px", borderRadius: "4px" }}>
+                                            {product.price.toFixed(2)}
+                                        </span>
+                                    </div>
+                                    <div className="aliexpress-sales-info">
+                                        <span><span className="aliexpress-ratings-count">{product.stars || 4.5}</span> Ratings</span>
+                                        <span><span className="aliexpress-sold-count">{Math.floor(Math.random() * 500) + 100}</span> Sold</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="aliexpress-price-container">
+                                    <div className="aliexpress-current-price">
+                                        <small>ETB</small> 
+                                        <span style={{ backgroundColor: "#fff0f0", padding: "2px 8px", borderRadius: "4px" }}>
+                                            {product.price.toFixed(2)}
+                                        </span>
+                                    </div>
+                                    <div className="aliexpress-sales-info">
+                                        <span><span className="aliexpress-ratings-count">{product.stars || 4.5}</span> Ratings</span>
+                                        <span><span className="aliexpress-sold-count">{Math.floor(Math.random() * 500) + 100}</span> Sold</span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="proDetails">
                             <h1>About The Product :</h1>

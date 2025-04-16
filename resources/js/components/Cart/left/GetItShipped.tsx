@@ -47,7 +47,7 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
           isClosable: true,
           position: "top",
         });
-        
+
         // Dispatch event to update cart count
         window.dispatchEvent(new CustomEvent('cart-updated'));
       },
@@ -66,7 +66,7 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
           isClosable: true,
           position: "top",
         });
-        
+
         // Dispatch event to update cart count when an item is removed
         window.dispatchEvent(new CustomEvent('cart-updated'));
       },
@@ -198,8 +198,8 @@ const GetItShipped = ({ cartItems }: GetItShippedProps): JSX.Element => {
                           >
                             Remove
                           </Button>
-                          <Text fontWeight={"bold"}>
-                            $ {(item.product.price * item.quantity).toFixed(2)}
+                          <Text fontWeight={"bold"} className="cart-price">
+                            ETB {(item.product.price * item.quantity).toFixed(2)}
                           </Text>
                         </HStack>
                       </HStack>
