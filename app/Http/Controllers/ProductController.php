@@ -122,7 +122,12 @@ class ProductController extends Controller
             'category' => 'required|string|max:255',
             'imageUrl' => 'required|url',
             'price' => 'required|numeric',
+            'original_price' => 'required|numeric',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'is_deal' => 'boolean',
             'type' => 'required|string|max:255',
+            'stars' => 'nullable|numeric|min:0|max:5',
+            'numReviews' => 'nullable|integer|min:0',
         ]);
 
         $product = Product::create($validated);
@@ -176,7 +181,12 @@ class ProductController extends Controller
             'category' => 'required|string|max:255',
             'imageUrl' => 'required|url',
             'price' => 'required|numeric',
+            'original_price' => 'required|numeric',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'is_deal' => 'boolean',
             'type' => 'required|string|max:255',
+            'stars' => 'nullable|numeric|min:0|max:5',
+            'numReviews' => 'nullable|integer|min:0',
         ]);
 
         $product->update($validated);
