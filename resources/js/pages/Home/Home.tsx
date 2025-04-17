@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import "./Home.css";
@@ -103,8 +103,51 @@ const Home: React.FC<HomeProps> = ({ products }) => {
     const superDeals = groupedProducts['superDeals'] ||
         Object.values(groupedProducts)
             .flat()
-            .filter(product => product.originalPrice && product.discountPercentage)
+            .filter(product => product.originalPrice && product.discountPercentage && product.discountPercentage >= 50)
             .slice(0, 8);
+
+    const [timeLeft, setTimeLeft] = useState({
+        days: 2,
+        hours: 8,
+        minutes: 45,
+        seconds: 30
+    });
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft(prevTime => {
+                let { days, hours, minutes, seconds } = prevTime;
+
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    seconds = 59;
+                    if (minutes > 0) {
+                        minutes--;
+                    } else {
+                        minutes = 59;
+                        if (hours > 0) {
+                            hours--;
+                        } else {
+                            hours = 23;
+                            if (days > 0) {
+                                days--;
+                            } else {
+                                days = 2;
+                                hours = 8;
+                                minutes = 45;
+                                seconds = 30;
+                            }
+                        }
+                    }
+                }
+
+                return { days, hours, minutes, seconds };
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <DefaultLayout title="Home - Wubet Gebeya">
@@ -169,31 +212,53 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                 </Carousel>
 
                 <div className="homePro">
-                    <h1 className="homeHead">Super Deals</h1>
-                    <p className="homeP">Shop our highest discounted items.</p>
-                    <div className="hc1">
+                    <div className="superDealsContainer">
+                        <div className="superDealHeader">
+                            <h1>SUPER DEALS</h1>
+                            <p>Limited time offers with 50%+ discounts!</p>
+
+                            <div className="timerBox">
+                                <div className="timerUnit">
+                                    <span className="timerValue">{timeLeft.days}</span>
+                                    <span className="timerLabel">days</span>
+                                </div>
+                                <div className="timerUnit">
+                                    <span className="timerValue">{timeLeft.hours}</span>
+                                    <span className="timerLabel">hrs</span>
+                                </div>
+                                <div className="timerUnit">
+                                    <span className="timerValue">{timeLeft.minutes}</span>
+                                    <span className="timerLabel">min</span>
+                                </div>
+                                <div className="timerUnit">
+                                    <span className="timerValue">{timeLeft.seconds}</span>
+                                    <span className="timerLabel">sec</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <Carousel
                             responsive={responsivefeatures}
-                            customTransition="1s"
-                            transitionDuration={1000}
+                            customTransition="0.5s"
+                            transitionDuration={500}
                         >
                             {superDeals.map((product) => (
                                 <InertiaLink href={route('product.show', product.id)} key={product.id}>
-                                    <div className="homeFeatures">
-                                        <div>
-                                            <p>{product.name}</p>
-                                            {product.discountPercentage && (
-                                                <p className="discount">{product.discountPercentage}% OFF</p>
-                                            )}
-                                            <div className="price-container">
-                                                <span className="current-price">ETB {product.price}</span>
-                                                {product.originalPrice && (
-                                                    <span className="original-price">ETB {product.originalPrice}</span>
-                                                )}
-                                            </div>
+                                    <div className="superDealItem">
+                                        <div className="discountBadge">
+                                            {product.discountPercentage}% OFF
                                         </div>
-                                        <div>
-                                            <img src={product.imageUrl} alt="proImg" />
+                                        <div className="brand">{product.brand}</div>
+                                        <div className="productName">{product.name}</div>
+                                        <div className="imageContainer">
+                                            <img src={product.imageUrl} alt={product.name} />
+                                        </div>
+                                        <div className="priceContainer">
+                                            <div className="currentPrice">ETB {product.price.toFixed(2)}</div>
+                                            <div className="originalPrice">ETB {product.originalPrice?.toFixed(2)}</div>
+                                        </div>
+                                        <div className="saveLabel">
+                                            Save ETB {((product.originalPrice || 0) - product.price).toFixed(2)}
                                         </div>
                                     </div>
                                 </InertiaLink>
