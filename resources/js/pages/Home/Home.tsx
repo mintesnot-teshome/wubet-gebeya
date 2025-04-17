@@ -100,7 +100,7 @@ const Home: React.FC<HomeProps> = ({ products }) => {
     const sellingFast = groupedProducts['popular'] || [];
     const featuredCategories = groupedProducts['category'] || [];
     const guidanceProducts = groupedProducts['guide'] || [];
-    const superDeals = groupedProducts['deals'] ||
+    const superDeals = groupedProducts['superDeals'] ||
         Object.values(groupedProducts)
             .flat()
             .filter(product => product.originalPrice && product.discountPercentage)
